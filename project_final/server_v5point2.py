@@ -29,6 +29,7 @@ class MultiThreadedServer():
                 client_handler = threading.Thread(target=self.handle_client, args=(client_socket, client_address))
                 client_handler.start()
                 self.client_threads.append(client_handler)
+
             self.server_socket.close()
             
     def handle_client(self, client_socket, client_address):
