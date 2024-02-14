@@ -39,7 +39,7 @@ class ChatClient:
 
 if __name__ == "__main__":
     server_address = "127.0.0.1"  # Change this to the server's IP address
-    server_port = 12345  # Change this to the server's port
+    server_port = 5000  # Change this to the server's port
 
     client = ChatClient(server_address, server_port)
     client.run()

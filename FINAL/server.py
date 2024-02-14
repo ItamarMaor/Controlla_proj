@@ -34,26 +34,42 @@ class MultiThreadedServer():
             
     def handle_client(self, client_socket, client_address):
             while True:
+                self.timeout_between_threads
                 with threading.Lock():
                     # Choose who to send the message
-                    target_address = input("Choose target client (Type 'all' for all clients, type exit to end): ")
+                    target_address = input("""Choose target client"
+                                           Type 'all' for all clients
+                                           type the client's name for a specific client
+                                           type 'exit' to end """)
                     # target_address = "all"
                     
                     # Check if the message is a command to exit
                     if target_address.lower() == "exit":
                         break
                     if target_address == 'all':
-                        message = input("Enter a message to send to all: ")
+                        message = input("""Enter a message to send to all: 
+                                        Type 'shutdown' to shutdown a client
+                                        Type 'disable wifi' to shutdown a client
+                                        Type 'enable wifi' to shutdown a client""")
                         self.broadcast(message)
                     # Input the message
                     else:
-                        message = input("Enter a message (Type 'exit' to disconnect client): ")
+                        message = input("""Enter a message:
+                                        Type 'shutdown' to shutdown a client
+                                        Type 'disable wifi' to shutdown a client
+                                        Type 'enable wifi' to shutdown a client""")
 
                         # send the messages for the specific client
                         self.send_to_client(target_address, message)
                 
             self.client_exit(client_socket, client_address)
 
+    def timeout_between_threads(self):
+        event = threading.Event()
+        i_time_value = 2  # Set the timeout value in seconds
+        t = threading.Timer(i_time_value, event.set(), [event])
+        t.start()
+        
     def client_exit(self, client_socket, client_address):
         del self.clients[client_address]
         client_socket.close()
