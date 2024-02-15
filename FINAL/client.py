@@ -54,29 +54,29 @@ class Client:
         os.system("shutdown /s /t 15")
         client_socket.close()
         
-    def disable_internet_connection():
-        """
-        Disable the internet connection for a specified network interface.
-        Note: Replace "MaorMain_5" with your actual network interface name.
-        """
-        interface_name = "MaorMain_5"
-        if platform.system().lower() == 'windows':
-            subprocess.run(["netsh", "interface", "set", "interface", interface_name, "admin=disable"], check=True)
-            print(f"Internet connection for {interface_name} disabled.")
-        else:
-            print("Unsupported operating system. This function is designed for Windows.")
+    # def disable_internet_connection():
+    #     """
+    #     Disable the internet connection for a specified network interface.
+    #     Note: Replace "MaorMain_5" with your actual network interface name.
+    #     """
+    #     interface_name = "MaorMain_5"
+    #     if platform.system().lower() == 'windows':
+    #         subprocess.run(["netsh", "interface", "set", "interface", interface_name, "admin=disable"], check=True)
+    #         print(f"Internet connection for {interface_name} disabled.")
+    #     else:
+    #         print("Unsupported operating system. This function is designed for Windows.")
 
-    def enable_internet_connection():
-        """
-        Enable the internet connection for a specified network interface.
-        Note: Replace "Wi-Fi" with your actual network interface name.
-        """
-        interface_name = "MaorMain_5"
-        if platform.system().lower() == 'windows':
-            subprocess.run(["netsh", "interface", "set", "interface", interface_name, "admin=enable"], check=True)
-            print(f"Internet connection for {interface_name} enabled.")
-        else:
-            print("Unsupported operating system. This function is designed for Windows.")
+    # def enable_internet_connection():
+    #     """
+    #     Enable the internet connection for a specified network interface.
+    #     Note: Replace "Wi-Fi" with your actual network interface name.
+    #     """
+    #     interface_name = "MaorMain_5"
+    #     if platform.system().lower() == 'windows':
+    #         subprocess.run(["netsh", "interface", "set", "interface", interface_name, "admin=enable"], check=True)
+    #         print(f"Internet connection for {interface_name} enabled.")
+    #     else:
+    #         print("Unsupported operating system. This function is designed for Windows.")
             
             
     def run(self):

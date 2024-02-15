@@ -1,37 +1,93 @@
 import sqlite3
 
-# Connect to an SQLite database (creates a new file if it doesn't exist)
-conn = sqlite3.connect('my_database.db')
+class Database:
+    def __init__(self):
+        self.database = 'Contralla_db.sqlite'
 
-# Create a cursor
-cursor = conn.cursor()
+    def create_conn(self):
+        '''creates connection to the database'''
+        conn = sqlite3.connect(self.database)
+        return (conn ,conn.cursor())
+    
+    # def generic_func_temp(self):
+    #     conn, cursor = self.create_conn()
+        
+    #     code here
+        
+    #     conn.commit()
+    #     conn.close()
+        
+    def create_user_table(self):
+        conn, cursor = self.create_conn()
+        # Create a table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS users (
+                username TEXT PRIMARY KEY,
+                password TEXT
+            )
+        ''')
+        conn.commit()
+        conn.close()
+    
+    def insert_user(self, username, password):
+        self.create_user_table()
+        conn, cursor = self.create_conn()
+        # Insert data
+        cursor.execute('''
+            INSERT INTO users (username, password) VALUES (?, ?)
+        ''', (username, password),)
+        conn.commit()
+        conn.close()
+        
+    def remove_user(self, username):
+        self.create_user_table()
+        conn, cursor = self.create_conn()
+        # delete data
+        cursor.execute('DELETE FROM users WHERE username = ?', (username,))
+        conn.close()
+    
+    def check_user(self, username):
+        self.create_user_table()
+        conn, cursor = self.create_conn()
+        # check if user exists
+        cursor.execute('DELETE FROM users WHERE username = ?', (username,))
+        conn.close()
+        
+        
+a = Database()
+# # a.insert_user('aa', 'hhh')
+# a.remove_user('aa')
 
-# Create a table
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS students (
-        id INTEGER PRIMARY KEY,
-        name TEXT,
-        age INTEGER
-    )
-''')
+    
+    # # Create a cursor
+    # cursor = conn.cursor()
 
-# Insert data
-cursor.execute('''
-    INSERT INTO students (name, age) VALUES (?, ?)
-''', ('Alice', 22),)
-conn.commit()
+    # # Create a table
+    # cursor.execute('''
+    #     CREATE TABLE IF NOT EXISTS students (
+    #         id INTEGER PRIMARY KEY,
+    #         name TEXT,
+    #         age INTEGER
+    #     )
+    # ''')
 
-# Query data
-cursor.execute('SELECT * FROM students')
-rows = cursor.fetchall()
+    # # Insert data
+    # cursor.execute('''
+    #     INSERT INTO students (name, age) VALUES (?, ?)
+    # ''', ('Alice', 22),)
+    # conn.commit()
 
-for row in rows:
-    print(row)
+    # # Query data
+    # cursor.execute('SELECT * FROM students')
+    # rows = cursor.fetchall()
 
-# Update and delete data
-cursor.execute('UPDATE students SET age = ? WHERE name = ?', (23, 'Alice'))
-cursor.execute('DELETE FROM students WHERE name = ?', ('Alice',))
-conn.commit()
+    # for row in rows:
+    #     print(row)
 
-# Close the connection
-conn.close()
+    # # Update and delete data
+    # cursor.execute('UPDATE students SET age = ? WHERE name = ?', (23, 'Alice'))
+    # cursor.execute('DELETE FROM students WHERE name = ?', ('Alice',))
+    # conn.commit()
+
+    # # Close the connection
+    # conn.close()

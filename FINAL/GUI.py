@@ -1,5 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
+from server_utilities import Database
+from server import MultiThreadedServer
 
 palette = {
     'background_color': '#b2b2b2',
@@ -9,21 +11,18 @@ palette = {
 
 class GUI:
     def __init__(self):
-        self.root = tk.Tk()
-        self.root.title("Main Window")
-        self.root.geometry('700x500')
-        self.root['background'] = palette['background_color']
-        
+        self.server = MultiThreadedServer('127.0.0.1',8080)
 
     def login(self):
-        login_window = self.root
+        login_window = tk.Tk()
         login_window.title("Log In")
         login_window.geometry('700x500')
         login_window['background'] = palette['background_color']
 
         def login_button_function():
-            name = username.get()
-            if name == "itamar" :
+            uname = username_entry.get()
+            password = password_entry.get()
+            if self.server.database.check_user(uname, password):
                 # messagebox.showinfo("good", 'good job')
                 self.open_main_screen()
                 login_window.destroy()
@@ -52,7 +51,7 @@ class GUI:
             fg=palette['text_color'],
             command=login_button_function, # Function to check if username valid
         )   
-        username = tk.Entry(
+        username_entry = tk.Entry(
             login_window,
             fg=palette['text_color'],
             bg="white", 
@@ -66,7 +65,7 @@ class GUI:
             bg=palette['background_color'],
             fg=palette['text_color']
         )
-        password = tk.Entry(
+        password_entry = tk.Entry(
             login_window,
             fg=palette['text_color'],
             font=("Calibari", 14),
@@ -93,9 +92,9 @@ class GUI:
         greeting.place(relx=0.5, rely=0.1, anchor='center')
         log_in_label.place(relx=0.25, rely=0.29, anchor='e')
         button.place(relx=0.5, rely=0.6, anchor='center')
-        username.place(relx=0.31, rely=0.35, anchor='w')
+        username_entry.place(relx=0.31, rely=0.35, anchor='w')
         username_label.place(relx=0.25, rely=0.35, anchor='e')
-        password.place(relx=0.31, rely=0.4, anchor='w')
+        password_entry.place(relx=0.31, rely=0.4, anchor='w')
         password_label.place(relx=0.25, rely=0.4, anchor='e')
         logo.place(relx=0.5, rely=0.9, anchor='center')
 

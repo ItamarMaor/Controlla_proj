@@ -1,5 +1,6 @@
 import socket
 import threading
+from server_utilities import Database
 
 class MultiThreadedServer():
     def __init__(self, host, port):
@@ -9,6 +10,8 @@ class MultiThreadedServer():
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.bind((self.host, self.port))
         self.server_socket.listen(5)
+        self.database = Database()
+        self.messages_lock = threading.Lock()
         self.clients = {}  # Dictionary to store connected clients
         self.usernames = {} #Dictionary to store usernames to client address and socket
         self.client_threads = []
@@ -91,6 +94,12 @@ class MultiThreadedServer():
                 print(f"Target client {target_address} not found.")
         except Exception as e:
             print(f"Error sending message to client: {e}")
+            
+    def request_data(self, cmmd, data=''):
+        '''allows to gui to add messages to be sent, uses the threading lock in order to stop the thread to be able to insert to the messages list'''
+        with self.messages_lock:
+            self.messages.append((cmmd, data))
+
 
 if __name__ == "__main__":
     server = MultiThreadedServer(host='0.0.0.0', port=5000)
