@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkintertable import TableCanvas
 from tkinter import messagebox
 from server_utilities import Database
 from server import MultiThreadedServer
@@ -9,6 +10,44 @@ palette = {
     'button_color': '#51b0d7'
 }
 
+class CustomTkinterTable(TableCanvas):
+    def __init__(self, parent, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+        self.disable_interactive_features()
+
+    def disable_interactive_features(self):
+        # Disable editing features
+        self.set_row_values = lambda row, values: None
+        self.insert_row = lambda row, values: None
+        self.delete_row = lambda row: None
+        self.update_row = lambda row, values: None
+        self.update_cell = lambda row, col, value: None
+        self.delete_column = lambda col: None
+        self.startCellEdit = lambda cell, event=None: None
+        self.stopCellEdit = lambda cell: None
+        self.cellEdited = lambda cell: None
+
+        # Disable sorting and filtering features
+        self.sort_column = lambda col, reverse=False: None
+        self.filter_column = lambda col, value: None
+
+        # Unbind mouse and keyboard events
+        self.unbind_mouse_events()
+        self.unbind_keyboard_events()
+
+    # Override bindings for mouse and keyboard events
+    def bind_mouse_events(self):
+        pass
+
+    def unbind_mouse_events(self):
+        pass
+
+    def bind_keyboard_events(self):
+        pass
+
+    def unbind_keyboard_events(self):
+        pass
+    
 class GUI:
     def __init__(self):
         self.server = MultiThreadedServer('127.0.0.1',8080)
@@ -26,8 +65,18 @@ class GUI:
             if self.server.database.check_user(uname, password):
                 # messagebox.showinfo("good", 'good job')
                 self.username = uname
-                self.open_main_screen()
                 login_window.destroy()
+                self.admin_window()
+
+        def signup_button_function():
+            uname = username_entry.get()
+            password = password_entry.get()
+            if not self.server.database.check_user(uname, password):
+                self.server.database.insert_user(uname, password)
+                # messagebox.showinfo("good", 'good job')
+                self.username = uname
+                login_window.destroy()
+                self.admin_window()
 
         greeting = tk.Label(
             login_window,
@@ -43,7 +92,7 @@ class GUI:
             fg=palette['text_color'],
             bg=palette['background_color']
         )
-        button = tk.Button(
+        log_in_button = tk.Button(
             login_window,
             text="Press to Log In!",
             font=("Garamond", 18),
@@ -52,7 +101,17 @@ class GUI:
             bg=palette['button_color'],
             fg=palette['text_color'],
             command=login_button_function, # Function to check if username valid
-        )   
+        )
+        sign_up_button = tk.Button(
+            login_window,
+            text="Sign Up?",
+            font=("Garamond", 18),
+            width=15,
+            height=1,
+            bg=palette['button_color'],
+            fg=palette['text_color'],
+            command=signup_button_function, # Function to sign up new user if username valid
+        )    
         username_entry = tk.Entry(
             login_window,
             fg=palette['text_color'],
@@ -72,7 +131,8 @@ class GUI:
             fg=palette['text_color'],
             font=("Calibari", 14),
             bg="white", 
-            width=30
+            width=30,
+            show="*"  # Show asterisks for password entry
         )
         password_label = tk.Label(
             login_window,
@@ -83,7 +143,7 @@ class GUI:
         )
         logo = tk.Label(
             login_window,
-            text="Contralla",
+            text="Controlla",
             font=("Garamond", 45),
             bg=palette['background_color'],
             fg=palette['text_color']
@@ -92,8 +152,9 @@ class GUI:
 
             
         greeting.place(relx=0.5, rely=0.1, anchor='center')
-        log_in_label.place(relx=0.25, rely=0.29, anchor='e')
-        button.place(relx=0.5, rely=0.6, anchor='center')
+        # log_in_label.place(relx=0.25, rely=0.29, anchor='e')
+        log_in_button.place(relx=0.5, rely=0.6, anchor='center')
+        sign_up_button.place(relx=0.5, rely=0.7, anchor='center')
         username_entry.place(relx=0.31, rely=0.35, anchor='w')
         username_label.place(relx=0.25, rely=0.35, anchor='e')
         password_entry.place(relx=0.31, rely=0.4, anchor='w')
@@ -104,6 +165,57 @@ class GUI:
 
         login_window.mainloop()
 
+    def admin_window(self):
+        def button_clicked(row):
+            print(f'You clicked the button on row {row}')
+
+        # Create a function to handle additional button clicks
+        def additional_button_clicked(row, column):
+            print(f'You clicked the additional button {column} on row {row}')
+
+        root = tk.Tk()
+
+        # Create a frame to hold the table
+        table_frame = tk.Frame(root)
+        table_frame.pack(expand=True, fill=tk.BOTH)
+
+        # Create a frame to hold the buttons below the table
+        button_frame = tk.Frame(root)
+        button_frame.pack()
+
+        # Data for the table
+        data = self.server.database.format_to_tktable()
+
+        # Create the table
+        table = CustomTkinterTable(table_frame, data=data)
+        table.createTableFrame()
+
+        # Loop through the rows and add buttons to each one
+        for row_key, row_data in data.items():
+            row_index = list(data.keys()).index(row_key)
+            for i in range(3):
+                # Get the coordinates of the cell
+                x1, y1, x2, y2 = table.getCellCoords(row_index, 2 + i)
+                # Create a button widget
+                if i % 3 == 0:
+                    btn_text = 'Shutdown'
+                elif i % 3 == 1:
+                    btn_text = 'Screenshot'
+                else:
+                    btn_text = 'Block'
+                btn = tk.Button(table, text=btn_text, command=lambda r=row_key, c=i: additional_button_clicked(r, c + 1))
+                # Add the button to the canvas
+                table.create_window(((x1 + x2) // 2, (y1 + y2) // 2), window=btn)
+
+        # Add three buttons below the table
+        btn1 = tk.Button(button_frame, text="Add Student")
+        btn1.pack(side=tk.LEFT)
+        btn2 = tk.Button(button_frame, text="Block All")
+        btn2.pack(side=tk.LEFT)
+        btn3 = tk.Button(button_frame, text="Shutdown All")
+        btn3.pack(side=tk.LEFT)
+
+        root.mainloop()
 
     def open_main_screen(self):
         

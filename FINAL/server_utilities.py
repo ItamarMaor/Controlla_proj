@@ -55,13 +55,60 @@ class Database:
         conn.close()
         
         return user_exists
+    
+    def create_student_table(self):
+        conn, cursor = self.create_conn()
+        # Create a table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS students (
+                ip TEXT PRIMARY KEY,
+                name TEXT
+            )
+        ''')
+        conn.commit()
+        conn.close()
+    
+    def insert_student(self, ip, name):
+        self.create_student_table()
+        conn, cursor = self.create_conn()
+        # Insert data
+        cursor.execute('''
+            INSERT INTO students (ip, name) VALUES (?, ?)
+        ''', (ip, name),)
+        conn.commit()
+        conn.close()
+        
+    def remove_student(self, name):
+        self.create_student_table()
+        conn, cursor = self.create_conn()
+        # delete data
+        cursor.execute('DELETE FROM students WHERE name = ?', (name,))
+        conn.close()
+        
+    def format_to_tktable(self):
+        conn, cursor = self.create_conn()
+        
+        data_dict = {}
+        
+        cursor.execute("SELECT ip, name FROM students")
+        rows = cursor.fetchall()
+        
+        # Populate the dictionary
+        for idx, row in enumerate(rows):
+            rec_key = f'rec{idx+1}'
+            data_dict[rec_key] = {'IP': row[0], 'Name': row[1], 'Shutdown': None, 'Screenshare': None, 'Block': None}
+        
+        # Close the connection
+        conn.close()
+        
+        return data_dict
         
         
 if __name__ == '__main__':
         
     a = Database()
-    # a.insert_user('aa', 'hhh')
-    # a.remove_user('aa')
+    # a.insert_student('1227.0.0.1', 'bb')
+    print(a.format_to_tktable())
 
     
     # # Create a cursor
