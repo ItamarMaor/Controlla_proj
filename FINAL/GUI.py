@@ -170,7 +170,7 @@ class GUI:
             print(f'You clicked the button on row {row}')
 
         # Create a function to handle additional button clicks
-        def additional_button_clicked(row, column):
+        def additional_button_clicked(column, row):
             print(f'You clicked the additional button {column} on row {row}')
 
         root = tk.Tk()
@@ -203,7 +203,7 @@ class GUI:
                     btn_text = 'Screenshot'
                 else:
                     btn_text = 'Block'
-                btn = tk.Button(table, text=btn_text, command=lambda r=row_key, c=i: additional_button_clicked(r, c + 1))
+                btn = tk.Button(table, text=btn_text, command=lambda r=row_key, c=i: additional_button_clicked(c + 1, r))
                 # Add the button to the canvas
                 table.create_window(((x1 + x2) // 2, (y1 + y2) // 2), window=btn)
 

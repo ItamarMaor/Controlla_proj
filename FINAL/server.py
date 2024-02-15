@@ -1,6 +1,9 @@
 import socket
 import threading
+import tkinter as tk
+from tkinter import simpledialog
 from server_utilities import Database
+from server_utilities import ServerFunctions
 
 class MultiThreadedServer():
     def __init__(self, host, port):
@@ -16,15 +19,18 @@ class MultiThreadedServer():
         self.usernames = {} #Dictionary to store usernames to client address and socket
         self.client_threads = []
         self.username = ""
+        self.utills = ServerFunctions
+        
         
         print(f"Server listening on {self.host}:{self.port}")
 
     def start_server(self):
             while True:
                 client_socket, client_address = self.server_socket.accept()
-                data = client_socket.recv(1024)
-                if data:
-                    self.username = data.decode('utf-8')
+                self.username = self.utills.client_username(self)
+                # data = client_socket.recv(1024)
+                # if data:
+                #     self.username = data.decode('utf-8')
                 print(f"\nAccepted connection from user: {self.username} - {client_address}")
                 # Store client socket in the dictionary
                 self.clients[client_address] = client_socket
@@ -34,10 +40,13 @@ class MultiThreadedServer():
                 self.client_threads.append(client_handler)
 
             self.server_socket.close()
-            
+    
+    def new_handle_client (self, cl):
+        return None
+    
     def handle_client(self, client_socket, client_address):
             while True:
-                self.timeout_between_threads
+                # self.timeout_between_threads
                 with threading.Lock():
                     # Choose who to send the message
                     target_address = input("""Choose target client"
@@ -67,11 +76,11 @@ class MultiThreadedServer():
                 
             self.client_exit(client_socket, client_address)
 
-    def timeout_between_threads(self):
-        event = threading.Event()
-        i_time_value = 2  # Set the timeout value in seconds
-        t = threading.Timer(i_time_value, event.set(), [event])
-        t.start()
+    # def timeout_between_threads(self):
+    #     event = threading.Event()
+    #     i_time_value = 2  # Set the timeout value in seconds
+    #     t = threading.Timer(i_time_value, event.set(), [event])
+    #     t.start()
         
     def client_exit(self, client_socket, client_address):
         del self.clients[client_address]
@@ -85,20 +94,21 @@ class MultiThreadedServer():
             except Exception as e:
                 print(f"Error broadcasting message to client: {e}")
 
+
     def send_to_client(self, target_address, message):
         try:
             target_socket = self.usernames.get(target_address)
             if target_socket:
-                target_socket.sendall(f"Private Message: {message}".encode('utf-8'))
+                target_socket.sendall(message.encode('utf-8'))
             else:
                 print(f"Target client {target_address} not found.")
         except Exception as e:
             print(f"Error sending message to client: {e}")
             
-    def request_data(self, cmmd, data=''):
+    def request_data(self, cmmd, dst_addr, data=''):
         '''allows to gui to add messages to be sent, uses the threading lock in order to stop the thread to be able to insert to the messages list'''
         with self.messages_lock:
-            self.messages.append((cmmd, data))
+            self.messages.append((cmmd, dst_addr, data))
 
 
 if __name__ == "__main__":

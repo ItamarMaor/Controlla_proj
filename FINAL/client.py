@@ -4,6 +4,7 @@ import os
 import subprocess
 import platform
 
+
 class Client:
     def __init__(self, server_address, server_port):
         self.server_address = server_address
@@ -14,9 +15,9 @@ class Client:
         self.client_socket.connect((self.server_address, self.server_port))
         print("Connected to the server.")
 
-        # Get and send the username to the server
-        username = input("Enter your username: ")
-        self.client_socket.sendall(username.encode('utf-8'))
+        # # Get and send the username to the server
+        # username = self.client_username()
+        # self.client_socket.sendall(username.encode('utf-8'))
 
     def receive_messages(self):
         while True:
