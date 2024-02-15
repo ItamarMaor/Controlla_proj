@@ -12,6 +12,7 @@ palette = {
 class GUI:
     def __init__(self):
         self.server = MultiThreadedServer('127.0.0.1',8080)
+        self.username = ''
 
     def login(self):
         login_window = tk.Tk()
@@ -24,6 +25,7 @@ class GUI:
             password = password_entry.get()
             if self.server.database.check_user(uname, password):
                 # messagebox.showinfo("good", 'good job')
+                self.username = uname
                 self.open_main_screen()
                 login_window.destroy()
 
@@ -110,9 +112,13 @@ class GUI:
         main_window.geometry('500x300')
         main_window['background'] = palette['background_color']
 
+        #waiting for name to appear before showing new window
+        while self.username == '':
+            pass
+        
         new_label = tk.Label(
             main_window,
-            text="Welcome aboard {name}".format(name= "itamar"), #change it so  the user name is a variable 
+            text=f'Welcome aboard {self.username}', #change it so  the user name is a variable 
             font=("Garamond", 20),
             fg=palette['text_color'],
             bg=palette['background_color']

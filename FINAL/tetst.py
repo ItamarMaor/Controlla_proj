@@ -1,99 +1,75 @@
-import socket
-import threading
-import os
-import subprocess
-import platform
+import sqlite3
+import tkinter as tk
+from tkinter import N, S, E, W, TOP, BOTTOM, LEFT, RIGHT, END
+from tksheet import Sheet
 
-class Client:
-    def __init__(self, server_address, server_port):
-        self.server_address = server_address
-        self.server_port = server_port
-        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+class ComputerTableApp:
+    def __init__(self, root, db_name, table_name):
+        self.root = root
+        self.db_name = db_name
+        self.table_name = table_name
+        self.conn = sqlite3.connect(self.db_name)
+        self.cursor = self.conn.cursor()
 
-    def connect(self):
-        self.client_socket.connect((self.server_address, self.server_port))
-        print("Connected to the server.")
+        # Create a sample table for demo purposes only.
+        # In a full app, the database schema would be created elsewhere.
+        self.create_table()
 
-        # Get and send the username to the server
-        username = input("Enter your username: ")
-        self.client_socket.sendall(username.encode('utf-8'))
+        # Create the sheet to display data
+        self.sheet = Sheet(self.root, page_up_down_select_row=True)
+        self.sheet.grid(row=0, column=0, sticky=N + S + E + W)
 
-    def receive_messages(self):
-        while True:
-            data = self.client_socket.recv(1024)
-            if not data:
-                break    
-            msg = self.decoding_data_to_msg(data)
-            print(f"{msg}")
+        # Add column headers
+        self.sheet.headers(["Computer Name", "Button 1", "Button 2", "Button 3"])
 
-            if msg == "shutdown":
-                # If the received message is shutdown the client does so 
-                self.shutdown_computer(self.client_socket)
-                break 
-            # if msg == "disable wifi":
-            #     disable_internet_connection()
-            # if msg == "enable wifi":
-            #     enable_internet_connection()
-                
-                
-                       
-                        
-    def decoding_data_to_msg(data):
-            decoded_data = data.decode('utf-8')
-            msg_list = decoded_data.split(":")
-            msg = msg_list[1].strip()
-            # print ("post_colon_msg=" + post_colon_msg)
-            # final_message_list = post_colon_msg.split(" ")
-            # final_message = final_message_list[1].strip()
-            # print ("final_message" + final_message)
-            return msg
-    
-    
-    def shutdown_computer(self,client_socket):
-        os.system("shutdown /s /t 15")
-        client_socket.close()
-        
-    def disable_internet_connection():
-        """
-        Disable the internet connection for a specified network interface.
-        Note: Replace "MaorMain_5" with your actual network interface name.
-        """
-        interface_name = "MaorMain_5"
-        if platform.system().lower() == 'windows':
-            subprocess.run(["netsh", "interface", "set", "interface", interface_name, "admin=disable"], check=True)
-            print(f"Internet connection for {interface_name} disabled.")
-        else:
-            print("Unsupported operating system. This function is designed for Windows.")
+        # Fetch data from the table and populate the sheet
+        self.populate_sheet()
 
-    def enable_internet_connection():
-        """
-        Enable the internet connection for a specified network interface.
-        Note: Replace "Wi-Fi" with your actual network interface name.
-        """
-        interface_name = "MaorMain_5"
-        if platform.system().lower() == 'windows':
-            subprocess.run(["netsh", "interface", "set", "interface", interface_name, "admin=enable"], check=True)
-            print(f"Internet connection for {interface_name} enabled.")
-        else:
-            print("Unsupported operating system. This function is designed for Windows.")
-            
-            
-    def run(self):
-        try:
-            self.connect()
-            receive_thread = threading.Thread(target=self.receive_messages)
-            receive_thread.start()
-            receive_thread.join()
+        # Add two buttons below the table
+        self.add_buttons()
 
-        except KeyboardInterrupt:
-            print("Client shutting down.")
-        finally:
-            self.client_socket.close()
+    def create_table(self):
+        col_defs = ("ID INTEGER PRIMARY KEY", "computer_name TEXT", "button1 TEXT", "button2 TEXT", "button3 TEXT")
+        stmnt = f"CREATE TABLE IF NOT EXISTS {self.table_name} ({', '.join(col_defs)})"
+        self.cursor.execute(f"DROP TABLE IF EXISTS {self.table_name}")
+        self.cursor.execute(stmnt)
+        self.conn.commit()
 
+    def populate_sheet(self):
+        # Sample data (replace with your own)
+        data = [
+            ("Computer A", "", "", ""),
+            ("Computer B", "", "", ""),
+            ("Computer C", "", "", ""),
+        ]
+        self.sheet.set_sheet_data(data)
+
+    def add_buttons(self):
+        button_frame = tk.Frame(self.root)
+        button_frame.grid(row=1, column=0, sticky=E)
+
+        button1 = tk.Button(button_frame, text="Action 1", command=self.button1_action)
+        button1.pack(side=LEFT)
+
+        button2 = tk.Button(button_frame, text="Action 2", command=self.button2_action)
+        button2.pack(side=LEFT)
+
+        button3 = tk.Button(button_frame, text="Action 3", command=self.button3_action)
+        button3.pack(side=LEFT)
+
+    def button1_action(self):
+        print("Button 1 clicked")
+
+    def button2_action(self):
+        print("Button 2 clicked")
+
+    def button3_action(self):
+        print("Button 3 clicked")
 
 if __name__ == "__main__":
-    server_address = "127.0.0.1"  # Change this to the server's IP address
-    server_port = 5000  # Change this to the server's port
+    db_name = "my_database.db"  # Replace with your database name
+    table_name = "computers"  # Replace with your table name
 
-    client = Client(server_address, server_port)
-    client.run()
+    root = tk.Tk()
+    app = ComputerTableApp(root, db_name, table_name)
+    root.mainloop()
