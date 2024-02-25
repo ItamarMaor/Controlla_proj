@@ -98,6 +98,7 @@ class ServerFunctions():
             root.destroy()
         
         root = tk.Tk()
+        root.wm_attributes("-topmost", True)
         header = tk.Label(root, text='Enter client username')
         name_entry = tk.Entry(root)
         ok_button = tk.Button(root, text='OK', command=on_click)

@@ -196,6 +196,7 @@ class Gui:
             text='Shutdown',
             font=("Calibri",14),
             border=1,
+            width=20,  # Set the width of the button to 20
             command=lambda: on_click('shutdown')  # Call on_click function with 'shutdown' as argument
         )
         screenshot_button = tk.Button(
@@ -203,6 +204,7 @@ class Gui:
             text='Take Screenshot',
             font=("Calibri",14),
             border=1,
+            width=20,  # Set the width of the button to 20
             command=lambda: on_click('screenshot')  # Call on_click function with 'screenshot' as argument
         )
         block_button = tk.Button(
@@ -210,6 +212,7 @@ class Gui:
             text='Block',
             font=("Calibri",14),
             border=1,
+            width=20,  # Set the width of the button to 20
             command=lambda: on_click('block')  # Call on_click function with 'block' as argument
         )
         vote_button = tk.Button(
@@ -217,6 +220,7 @@ class Gui:
             text='Vote',
             font=("Calibri",14),
             border=1,
+            width=20,  # Set the width of the button to 20
             command=lambda: on_click('vote')  # Call on_click function with 'vote' as argument
         )
 

@@ -69,12 +69,12 @@ class Server(Thread):
     def get_client_thread_by_listbox_selection(self, selection):
         for client_thread in self.client_threads:
             if [client_thread.ip, client_thread.username] == selection:
-                print(f"Found client thread: {client_thread.ip} - {client_thread.username}")
                 return client_thread
 
 class ClientThread(Thread): 
     def __init__(self, ip, port, client_socket, username): 
         Thread.__init__(self) 
+        self.utills = ServerFunctions()
         self.ip = ip 
         self.port = port
         self.client_socket = client_socket
@@ -99,8 +99,8 @@ class ClientThread(Thread):
         if self.client_socket in rlist:
             cmmd = self.client_socket.recv(1).decode('utf-8')
             data_len = int(self.client_socket.recv(8).decode('utf-8'))
-            data = self.client_socket.recv(data_len).decode('utf-8')
-        
+            data = self.client_socket.recv(data_len)
+
             self.handle_response(cmmd, data)
             
     def handle_response(self, cmmd, data):
@@ -113,11 +113,13 @@ class ClientThread(Thread):
                 # Command: vote
                 pass
         else:
+            data = data.decode('utf-8')
             print(f"Received command: {cmmd} with data: {data}")
            
     def append_message(self, cmmd, data=''):
         with self.lock:  # Acquire the lock before modifying the messages list
             self.messages.append((cmmd, data))
+            print(f"Appended message: {cmmd} with data: {data}")
 
 if __name__ == "__main__":
     server = Server(host='0.0.0.0', port=5000)
