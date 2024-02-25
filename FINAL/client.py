@@ -7,7 +7,6 @@ import pickle
 
 commands = {'disconnect': 0, 'shutdown': 1, 'screenshot': 2, 'block': 3, 'unblock': 4, 'vote': 5}
 
-
 class Client:
     def __init__(self, server_address, server_port):
         self.server_address = server_address
