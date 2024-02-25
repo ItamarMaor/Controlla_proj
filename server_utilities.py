@@ -3,7 +3,9 @@ import tkinter as tk
 from tkinter import simpledialog
 from PIL import Image
 import gzip
-
+from threading import Thread
+import threading
+import time
 
 class Database:
     def __init__(self):
@@ -117,11 +119,11 @@ class ServerFunctions():
         image.show()
 
 
-        
 if __name__ == '__main__':  
-    a = Database()
+    pass
+    
     # # a.insert_student('1227.0.0.1', 'bb')
-    print(a.format_to_tktable())
+
 
     
     # # Create a cursor

@@ -176,19 +176,41 @@ class Gui:
         allows to add/remove sites from the list'''
         def on_click(button_name):
             cmmd = commands[button_name]
-            if button_name == 'vote':
-                data = 'vote' #TODO - make sure to append data according to vote
-            else:
-                data = ''
             selected_index = self.listbox.curselection()[0]  # Get the index of the selected item
             client_thread = self.server.get_client_thread_by_listbox_selection(self.listbox.get(selected_index).split(' '))
+            
+            data = ''
+            if button_name == 'vote':
+                data = 'vote' #TODO - make sure to append data according to vote
+                
+            if button_name == 'block':
+                if client_thread.is_blocked:
+                    # Command: unblock
+                    cmmd = 4
+                else:
+                    # Command: block
+                    cmmd = 3
+                client_thread.toggle_block_state()
+                switch_block_button_text(client_thread)
             client_thread.append_message(cmmd, data)
+            
+        def on_select(event):
+            selected_index = self.listbox.curselection()[0]
+            client_thread = self.server.get_client_thread_by_listbox_selection(self.listbox.get(selected_index).split(' '))
+            switch_block_button_text(client_thread)
 
+        def switch_block_button_text(client_thread):
+            if client_thread.get_block_state():
+                block_button.config(text='Unblock')
+            else:
+                block_button.config(text='Block')
+            
         admin_root = tk.Tk()
         admin_root.geometry('700x500')
         admin_root.title("Admin Controlla")
 
         self.listbox = tk.Listbox(admin_root)
+        self.listbox.bind('<<ListboxSelect>>', on_select)
         button_frame = tk.Frame(admin_root)  # Create a frame to hold the buttons
 
         shutdown_button = tk.Button(

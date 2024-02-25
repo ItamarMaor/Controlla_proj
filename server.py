@@ -7,6 +7,8 @@ from threading import Lock
 import select
 import pickle
 
+commands = {'disconnect': 0, 'shutdown': 1, 'screenshot': 2, 'block': 3, 'unblock': 4, 'vote': 5}
+
 class Server(Thread):
     def __init__(self, host, port):
         super().__init__()
@@ -80,6 +82,7 @@ class ClientThread(Thread):
         self.client_socket = client_socket
         self.username = username
         self.messages = []
+        self.is_blocked = False
         self.lock = Lock()  # Create a threading lock
         print("[+] New server socket thread started for " + ip + ":" + str(port))
 
@@ -105,16 +108,30 @@ class ClientThread(Thread):
             
     def handle_response(self, cmmd, data):
         cmmd = int(cmmd)
-        if cmmd in (2,5):
-            if cmmd == 2:
-                data = pickle.loads(data)
-                self.utills.show_screenshot(data)
-            elif cmmd == 5:
-                # Command: vote
-                pass
+        if cmmd == 1:
+            # Command: shutdown
+            pass
+        elif cmmd == 2:
+            # Command: screenshot
+            data = pickle.loads(data)
+            self.utills.show_screenshot(data)
+        elif cmmd in (3,4):
+            # Command: block/unblock
+            pass
+        elif cmmd == 5:
+            # Command: vote
+            pass
         else:
             data = data.decode('utf-8')
             print(f"Received command: {cmmd} with data: {data}")
+            
+    def toggle_block_state(self):  
+        with self.lock:
+            self.is_blocked = not self.is_blocked
+    
+    def get_block_state(self):
+        with self.lock:
+            return self.is_blocked
            
     def append_message(self, cmmd, data=''):
         with self.lock:  # Acquire the lock before modifying the messages list

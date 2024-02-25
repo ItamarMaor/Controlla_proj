@@ -4,6 +4,7 @@ import os
 from PIL import ImageGrab
 import gzip
 import pickle
+from client_utils import *
 
 commands = {'disconnect': 0, 'shutdown': 1, 'screenshot': 2, 'block': 3, 'unblock': 4, 'vote': 5}
 
@@ -13,14 +14,11 @@ class Client:
         self.server_port = server_port
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.messages = []
+        self.blocker = WindowBlocker()
 
     def connect(self):
         self.client_socket.connect((self.server_address, self.server_port))
         print("Connected to the server.")
-
-        # # Get and send the username to the server
-        # username = self.client_username()
-        # self.client_socket.sendall(username.encode('utf-8'))
 
     def send_recv_messages(self):
         while True:
@@ -58,9 +56,12 @@ class Client:
             elif cmmd == '3':
                 # Command: block
                 self.messages.append((3, 'blocked'))
+                self.blocker.start()
             elif cmmd == '4':
                 # Command: unblock
+                self.blocker.unblock()
                 self.messages.append((4, 'unblocked'))
+                self.blocker = WindowBlocker()
     
     def shutdown_computer(self):
         self.client_socket.close()
@@ -84,6 +85,7 @@ class Client:
             print("Client shutting down.")
         finally:
             self.client_socket.close()
+
 
 
 if __name__ == "__main__":
