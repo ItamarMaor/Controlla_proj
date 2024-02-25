@@ -19,12 +19,17 @@ class Client:
         self.client_socket.connect((self.server_address, self.server_port))
         print("Connected to the server.")
 
+        # # Get and send the username to the server
+        # username = self.client_username()
+        # self.client_socket.sendall(username.encode('utf-8'))
+
     def send_recv_messages(self):
         while True:
             self.receive_messages()
             
             #responsible for responses
             for cmmd, data in self.messages:
+                print(type(cmmd))
                 if cmmd == 2:
                     self.client_socket.sendall(f"{cmmd}{str(len(data)).zfill(8)}".encode('utf-8'))
                     self.client_socket.sendall(data)
