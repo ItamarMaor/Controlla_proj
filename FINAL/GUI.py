@@ -70,7 +70,7 @@ class Gui:
                 # messagebox.showinfo("good", 'good job')
                 self.username = uname
                 login_window.destroy()
-                self.server = Server('127.0.0.1',5000)
+                self.server = Server('0.0.0.0',5000)
                 self.server.start()
                 self.admin_window()
 

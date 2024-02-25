@@ -1,6 +1,8 @@
 import sqlite3
 import tkinter as tk
 from tkinter import simpledialog
+from PIL import Image
+import gzip
 
 
 class Database:
@@ -106,6 +108,12 @@ class ServerFunctions():
         root.mainloop()    
         
         return uname
+    
+    def show_screenshot(self, data):
+        '''this function translates the photo from byte back to png and shows it'''
+        decompressed_data = gzip.decompress(data)
+        image = Image.frombytes("RGB", (1920, 1080), decompressed_data)
+        image.show()
 
 
         

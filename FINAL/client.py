@@ -1,6 +1,9 @@
 import socket
 import threading
 import os
+from PIL import ImageGrab
+import gzip
+import pickle
 
 commands = {'disconnect': 0, 'shutdown': 1, 'screenshot': 2, 'block': 3, 'unblock': 4, 'vote': 5}
 
@@ -10,6 +13,7 @@ class Client:
         self.server_address = server_address
         self.server_port = server_port
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.messages = []
 
     def connect(self):
         self.client_socket.connect((self.server_address, self.server_port))
@@ -19,6 +23,14 @@ class Client:
         # username = self.client_username()
         # self.client_socket.sendall(username.encode('utf-8'))
 
+    def send_recv_messages(self):
+        self.receive_messages()
+        
+        #responsible for responses
+        for cmmd, data in self.messages:
+            self.client_socket.sendall(f"{cmmd}{str(len(data)).zfill(8)}{data}".encode('utf-8'))
+            self.messages.remove((cmmd, data))
+        
     def receive_messages(self):
         while True:
             cmmd = self.client_socket.recv(1).decode('utf-8')
@@ -36,13 +48,13 @@ class Client:
             self.shutdown_computer()
         elif cmmd == '2':
             # Command: screenshot
-            pass
+            self.messages.append((2, self.screenshot()))
         elif cmmd == '3':
             # Command: block
-            pass
+            self.messages.append((3, 'blocked'))
         elif cmmd == '4':
             # Command: unblock
-            pass
+            self.messages.append((4, 'unblocked'))
     
     def shutdown_computer(self):
         self.client_socket.close()
@@ -72,6 +84,11 @@ class Client:
     #     else:
     #         print("Unsupported operating system. This function is designed for Windows.")
             
+    def screenshot(self):
+        pic = ImageGrab.grab()
+        pic_bytes = pic.tobytes()
+        compressed_pic = gzip.compress(pic_bytes)
+        return pickle.dumps(compressed_pic)
             
     def run(self):
         try:

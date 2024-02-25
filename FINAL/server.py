@@ -1,12 +1,11 @@
 import socket
 import threading
-import tkinter as tk
-from tkinter import simpledialog
 from server_utilities import Database
 from server_utilities import ServerFunctions
 from threading import Thread
 from threading import Lock
 import select
+import pickle
 
 class Server(Thread):
     def __init__(self, host, port):
@@ -86,20 +85,36 @@ class ClientThread(Thread):
 
     def run(self): 
         while True: 
-            for cmmd, data in self.messages:
-                self.client_socket.send(f"{cmmd}{str(len(data)).zfill(8)}{data}".encode('utf-8'))
-                self.messages.remove((cmmd, data))
-                
-            # Check if the client socket is ready for receiving data
-            rlist, _, _ = select.select([self.client_socket], [], [], 0)
-            if self.client_socket in rlist:
-                cmmd = self.client_socket.recv(1).decode('utf-8')
-                data_len = int(self.client_socket.recv(8).decode('utf-8'))
-                data = self.client_socket.recv(data_len).decode('utf-8')
-                
-                #TODO: Process the received data here
-                print(f"Command: {cmmd}, Data: {data}")
+            self.send_messages()
+            self.recv_messages()
 
+    def send_messages(self):
+        for cmmd, data in self.messages:
+            self.client_socket.send(f"{cmmd}{str(len(data)).zfill(8)}{data}".encode('utf-8'))
+            self.messages.remove((cmmd, data))
+    
+    def recv_messages(self):
+        # Check if the client socket is ready for receiving data
+        rlist, _, _ = select.select([self.client_socket], [], [], 0)
+        if self.client_socket in rlist:
+            cmmd = self.client_socket.recv(1).decode('utf-8')
+            data_len = int(self.client_socket.recv(8).decode('utf-8'))
+            data = self.client_socket.recv(data_len).decode('utf-8')
+        
+            self.handle_response(cmmd, data)
+            
+    def handle_response(self, cmmd, data):
+        cmmd = int(cmmd)
+        if cmmd in (2,5):
+            if cmmd == 2:
+                data = pickle.loads(data)
+                self.utills.show_screenshot(data)
+            elif cmmd == 5:
+                # Command: vote
+                pass
+        else:
+            print(f"Received command: {cmmd} with data: {data}")
+           
     def append_message(self, cmmd, data=''):
         with self.lock:  # Acquire the lock before modifying the messages list
             self.messages.append((cmmd, data))
