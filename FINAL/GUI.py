@@ -55,6 +55,7 @@ class Gui:
         self.server = ''
         self.database = Database()
         self.username = ''
+        self.listbox = ''
 
     def login(self):
         login_window = tk.Tk()
@@ -171,59 +172,75 @@ class Gui:
         login_window.mainloop()
 
     def admin_window(self):
-        def button_clicked(ip, row):
-            print(f'You clicked the button on row {row} with IP {ip}')
-            # Now you can use the 'ip' variable in this function as needed
+        '''takes information about the blocked sites from the hosts file on server, formats it and shows it nicely -
+        allows to add/remove sites from the list'''
+        def on_click(button_name):
+            cmmd = commands[button_name]
+            if button_name == 'vote':
+                data = 'vote' #TODO - make sure to append data according to vote
+            else:
+                data = ''
+            selected_index = self.listbox.curselection()[0]  # Get the index of the selected item
+            client_thread = self.server.get_client_thread_by_listbox_selection(self.listbox.get(selected_index).split(' '))
+            client_thread.append_message(cmmd, data)
 
-        def additional_button_clicked(ip, column, row):
-            client = self.server.get_client_thread_by_ip(ip)
-            if column == 1:
-                cmmd = commands['shutdown']
-            elif column == 2:
-                cmmd = commands['screenshot']
-            elif column == 3:
-                cmmd = commands['block']
-                #TODO: Make sure to block\unblock according to it's current state
-                
-            client.append_message(cmmd)
-            print(f'You clicked the additional button {column} for IP {ip}')
-            # Now you can use the 'ip' variable in this function as needed
+        admin_root = tk.Tk()
+        admin_root.geometry('700x500')
+        admin_root.title("Admin Controlla")
 
-        root = tk.Tk()
+        self.listbox = tk.Listbox(admin_root)
+        button_frame = tk.Frame(admin_root)  # Create a frame to hold the buttons
 
-        table_frame = tk.Frame(root)
-        table_frame.pack(expand=True, fill=tk.BOTH)
+        shutdown_button = tk.Button(
+            button_frame,
+            text='Shutdown',
+            font=("Calibri",14),
+            border=1,
+            command=lambda: on_click('shutdown')  # Call on_click function with 'shutdown' as argument
+        )
+        screenshot_button = tk.Button(
+            button_frame,
+            text='Take Screenshot',
+            font=("Calibri",14),
+            border=1,
+            command=lambda: on_click('screenshot')  # Call on_click function with 'screenshot' as argument
+        )
+        block_button = tk.Button(
+            button_frame,
+            text='Block',
+            font=("Calibri",14),
+            border=1,
+            command=lambda: on_click('block')  # Call on_click function with 'block' as argument
+        )
+        vote_button = tk.Button(
+            button_frame,
+            text='Vote',
+            font=("Calibri",14),
+            border=1,
+            command=lambda: on_click('vote')  # Call on_click function with 'vote' as argument
+        )
 
-        button_frame = tk.Frame(root)
-        button_frame.pack()
+        self.listbox.pack(side=tk.LEFT, expand=True)
+        button_frame.pack(side=tk.RIGHT, expand=True, padx=2)  # Pack the button frame to the left with some padding
+        shutdown_button.pack(side=tk.TOP, pady=2)
+        screenshot_button.pack(side=tk.TOP, pady=2)
+        block_button.pack(side=tk.TOP, pady=2)
+        vote_button.pack(side=tk.TOP, pady=2)
+        self.reresh_listbox()
 
-        data = self.server.get_connected_clients()
+        while True:
+            admin_root.update_idletasks()
+            admin_root.update()
+            
+            if self.server.refresh:
+                self.reresh_listbox()
+                self.server.refresh = False
 
-        table = CustomTkinterTable(table_frame, data=data)
-        table.createTableFrame()
-
-        for row_key, row_data in data.items():
-            row_index = list(data.keys()).index(row_key)
-            for i in range(3):
-                x1, y1, x2, y2 = table.getCellCoords(row_index, 2 + i)
-                if i % 3 == 0:
-                    btn_text = 'Shutdown'
-                elif i % 3 == 1:
-                    btn_text = 'Screenshot'
-                else:
-                    btn_text = 'Block'
-                ip = row_data['IP']  # Get the IP value from the row data
-                btn = tk.Button(table, text=btn_text, command=lambda r=row_key, c=i, ip=ip: additional_button_clicked(ip, c + 1, r))
-                table.create_window(((x1 + x2) // 2, (y1 + y2) // 2), window=btn)
-
-        btn1 = tk.Button(button_frame, text="Add Student")
-        btn1.pack(side=tk.LEFT)
-        btn2 = tk.Button(button_frame, text="Block All")
-        btn2.pack(side=tk.LEFT)
-        btn3 = tk.Button(button_frame, text="Shutdown All")
-        btn3.pack(side=tk.LEFT)
-
-        root.mainloop()
+    def reresh_listbox(self):
+        self.listbox.delete(0, tk.END)
+        connected_clients = self.server.get_connected_clients()
+        for client in connected_clients:
+            self.listbox.insert(tk.END, f"{client[0]} {client[1]}")
 
     def open_main_screen(self):
         

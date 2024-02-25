@@ -1,8 +1,8 @@
 import socket
 import threading
 import os
-import subprocess
-import platform
+
+commands = {'disconnect': 0, 'shutdown': 1, 'screenshot': 2, 'block': 3, 'unblock': 4, 'vote': 5}
 
 
 class Client:
@@ -21,39 +21,32 @@ class Client:
 
     def receive_messages(self):
         while True:
-            data = self.client_socket.recv(1024)
-            if not data:
-                break
-            print ("data" + data.decode)    
-            msg = self.decoding_data_to_msg(data)
-            print(f"{msg}")
+            cmmd = self.client_socket.recv(1).decode('utf-8')
+            data_len = int(self.client_socket.recv(8).decode('utf-8'))
+            data = self.client_socket.recv(data_len).decode('utf-8')
 
-            if msg == "shutdown":
-                # If the received message is shutdown the client does so 
-                self.shutdown_computer(self.client_socket)
-                break 
-            # if msg == "disable wifi":
-            #     disable_internet_connection()
-            # if msg == "enable wifi":
-            #     enable_internet_connection()
-                
-                
-                       
-                        
-    def decoding_data_to_msg(data):
-            decoded_data = data.decode('utf-8')
-            msg_list = decoded_data.split(":")
-            msg = msg_list[1].strip()
-            # print ("post_colon_msg=" + post_colon_msg)
-            # final_message_list = post_colon_msg.split(" ")
-            # final_message = final_message_list[1].strip()
-            # print ("final_message" + final_message)
-            return msg
+            self.handle_requests(cmmd, data)
     
+    def handle_requests(self, cmmd, data):
+        if cmmd == '0':
+            # Command: disconnect
+            pass
+        elif cmmd == '1':
+            # Command: shutdown
+            self.shutdown_computer()
+        elif cmmd == '2':
+            # Command: screenshot
+            pass
+        elif cmmd == '3':
+            # Command: block
+            pass
+        elif cmmd == '4':
+            # Command: unblock
+            pass
     
-    def shutdown_computer(self,client_socket):
+    def shutdown_computer(self):
+        self.client_socket.close()
         os.system("shutdown /s /t 15")
-        client_socket.close()
         
     # def disable_internet_connection():
     #     """

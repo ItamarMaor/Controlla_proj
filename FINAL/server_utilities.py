@@ -87,26 +87,6 @@ class Database:
         # delete data
         cursor.execute('DELETE FROM students WHERE name = ?', (name,))
         conn.close()
-        
-    def format_to_tktable(self, data):
-        conn, cursor = self.create_conn()
-        
-        data_dict = {}
-        
-        # cursor.execute("SELECT ip, name FROM students")
-        # rows = cursor.fetchall()
-        # print(rows)
-        
-        # Populate the dictionary
-        for idx, row in enumerate(data):
-            rec_key = f'rec{idx+1}'
-            data_dict[rec_key] = {'IP': row[0], 'Name': row[1], 'Shutdown': None, 'Screenshare': None, 'Block': None}
-        
-        # Close the connection
-        conn.close()
-        
-        print(data_dict)
-        return data_dict
 
 class ServerFunctions():   
     def ask_for_username(self):

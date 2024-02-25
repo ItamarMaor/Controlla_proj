@@ -1,35 +1,76 @@
-import socket
-from threading import Thread
-from threading import Lock
-import select
+import tkinter as tk
+from tkinter import messagebox as mb
 
-# Multithreaded Python server : TCP Server Socket Thread Pool
-class ClientThread(Thread): 
-    def __init__(self, ip, port, client_socket): 
-        Thread.__init__(self) 
-        self.ip = ip 
-        self.port = port
-        self.client_socket = client_socket
-        self.messages = []
-        self.lock = Lock()  # Create a threading lock
-        print("[+] New server socket thread started for " + ip + ":" + str(port))
 
-    def run(self): 
-        while True: 
-            for cmmd, data in self.messages:
-                self.client_socket.send(f"{cmmd}{str(len(data)).zfill(8)}{data}".encode('utf-8'))
-                self.messages.remove(cmmd, data)
-                
-                # Check if the client socket is ready for receiving data
-                rlist, _, _ = select.select([self.client_socket], [], [], 0)
-                if self.client_socket in rlist:
-                    cmmd = self.client_socket.recv(1).decode('utf-8')
-                    data_len = int(self.client_socket.recv(8).decode('utf-8'))
-                    data = self.client_socket.recv(data_len).decode('utf-8')
-                    
-                    #TODO: Process the received data here
-                    print(f"Command: {cmmd}, Data: {data}")
+class gui():
+    def web_blocker():
+        '''takes information about the blocked sites from the hosts file on server, formats it and shows it nicely -
+        allows to add/remove sites from the list'''
+        def on_shutdown_click():
+            selected_index = listbox.curselection()[0]  # Get the index of the selected item
+            ip, username = listbox.get(selected_index).split(' ')
+            print(f'1You clicked the button on row {selected_index} with IP {ip}')
+        
+        def on_screenshot_click():
+            selected_index = listbox.curselection()[0]  # Get the index of the selected item
+            ip, username = listbox.get(selected_index).split(' ')
+            print(f'2You clicked the button on row {selected_index} with IP {ip}')
+        
+        def on_block_click():
+            selected_index = listbox.curselection()[0]  # Get the index of the selected item
+            ip, username = listbox.get(selected_index).split(' ')
+            print(f'3You clicked the button on row {selected_index} with IP {ip}')
+        
+        def on_vote_click():
+            selected_index = listbox.curselection()[0]  # Get the index of the selected item
+            ip, username = listbox.get(selected_index).split(' ')
+            print(f'4You clicked the button on row {selected_index} with IP {ip} to vote.')
 
-    def append_message(self, cmmd, data=''):
-        with self.lock:  # Acquire the lock before modifying the messages list
-            self.messages.append((cmmd, data))
+        web_blocker = tk.Tk()
+        web_blocker.geometry('700x500')
+        web_blocker.title("Web Blocker")
+
+        listbox = tk.Listbox(web_blocker)
+        button_frame = tk.Frame(web_blocker)  # Create a frame to hold the buttons
+
+        shutdown_button = tk.Button(
+            button_frame,
+            text='Shutdown',
+            font=("Calibri",14),
+            border=1,
+            command=on_shutdown_click  # Add the command to call the function
+        )
+        screenshot_button = tk.Button(
+            button_frame,
+            text='Take Screenshot',
+            font=("Calibri",14),
+            border=1,
+            command=on_screenshot_click  # Add the command to call the function
+        )
+        block_button = tk.Button(
+            button_frame,
+            text='Block',
+            font=("Calibri",14),
+            border=1,
+            command=on_block_click  # Add the command to call the function
+        )
+        vote_button = tk.Button(
+            button_frame,
+            text='Vote',
+            font=("Calibri",14),
+            border=1,
+            command=on_vote_click  # Add the command to call the function
+        )
+
+        listbox.pack(side=tk.LEFT, expand=True)
+        button_frame.pack(side=tk.RIGHT, expand=True, padx=2)  # Pack the button frame to the left with some padding
+        shutdown_button.pack(side=tk.TOP, pady=2)
+        screenshot_button.pack(side=tk.TOP, pady=2)
+        block_button.pack(side=tk.TOP, pady=2)
+        vote_button.pack(side=tk.TOP, pady=2)
+        
+        web_blocker.mainloop()
+        
+
+a = gui()
+gui.web_blocker()

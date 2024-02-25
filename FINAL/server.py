@@ -22,6 +22,7 @@ class Server(Thread):
         self.username = ""
         self.utills = ServerFunctions()
         self.messages = []
+        self.refresh = False
         
         print(f"Server listening on {self.host}:{self.port}")
 
@@ -34,6 +35,7 @@ class Server(Thread):
             client_thread = ClientThread(client_address[0], client_address[1], client_socket, client_username)
             client_thread.start()
             self.client_threads.append(client_thread)
+            self.refresh = True
             
     def client_exit(self, client_socket, client_address):
         del self.clients[client_address]
@@ -63,13 +65,13 @@ class Server(Thread):
         for client_thread in self.client_threads:
             connected_list.append((client_thread.ip, client_thread.username))
             
-        return self.database.format_to_tktable(connected_list)
+        return connected_list
     
-    def get_client_thread_by_ip(self, ip):
+    def get_client_thread_by_listbox_selection(self, selection):
         for client_thread in self.client_threads:
-            if client_thread.ip == ip:
+            if [client_thread.ip, client_thread.username] == selection:
+                print(f"Found client thread: {client_thread.ip} - {client_thread.username}")
                 return client_thread
-        return None
 
 class ClientThread(Thread): 
     def __init__(self, ip, port, client_socket, username): 
@@ -86,7 +88,7 @@ class ClientThread(Thread):
         while True: 
             for cmmd, data in self.messages:
                 self.client_socket.send(f"{cmmd}{str(len(data)).zfill(8)}{data}".encode('utf-8'))
-                self.messages.remove(cmmd, data)
+                self.messages.remove((cmmd, data))
                 
             # Check if the client socket is ready for receiving data
             rlist, _, _ = select.select([self.client_socket], [], [], 0)
