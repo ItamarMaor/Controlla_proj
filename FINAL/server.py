@@ -5,6 +5,8 @@ from tkinter import simpledialog
 from server_utilities import Database
 from server_utilities import ServerFunctions
 from threading import Thread
+from threading import Lock
+import select
 
 class Server(Thread):
     def __init__(self, host, port):
@@ -16,7 +18,7 @@ class Server(Thread):
         self.server_socket.listen(5)
         self.database = Database()
         self.messages_lock = threading.Lock()
-        self.client_data = []
+        self.client_threads = []
         self.username = ""
         self.utills = ServerFunctions()
         self.messages = []
@@ -27,22 +29,12 @@ class Server(Thread):
     def run(self):
         while True:
             client_socket, client_address = self.server_socket.accept()
-            self.client_username = self.utills.ask_for_username()
-            print(f"\nAccepted connection from user: {self.client_username} - {client_address}")
-            client_thread = threading.Thread(target=self.handle_client, args=(client_socket,))
+            client_username = self.utills.ask_for_username()
+            print(f"\nAccepted connection from user: {client_username} - {client_address}")
+            client_thread = ClientThread(client_address[0], client_address[1], client_socket, client_username)
             client_thread.start()
-            self.client_data.append((client_thread, client_address, self.client_username))
-
-
-    def handle_client(self, client_socket):
-        while True:
-            for message in self.messages[:]:
-                cmmd, dst_addr, data = message
-                print(f"Command: {cmmd}, Destination Address: {dst_addr}, Data: {data}")
-
-                self.messages.remove(message)
-
-
+            self.client_threads.append(client_thread)
+            
     def client_exit(self, client_socket, client_address):
         del self.clients[client_address]
         client_socket.close()
@@ -65,23 +57,50 @@ class Server(Thread):
         except Exception as e:
             print(f"Error sending message to client: {e}")
             
-    def request_data(self, cmmd, dst_addr, data=''):
-        '''Allows GUI to add messages to be sent. Uses threading lock to safely insert into the messages list.'''
-        with self.messages_lock:
-            message = (cmmd, dst_addr, data)  # Keep the tuple
-            self.messages.append(message)
-            text = ' '.join(map(str, message))  # Convert the tuple to string for printing
-            print("what up my man", text)
-            
     def get_connected_clients(self):
         connected_list = []
         
-        for _, client_address, client_username in self.client_data:
-            connected_list.append((client_address[0], client_username))
+        for client_thread in self.client_threads:
+            connected_list.append((client_thread.ip, client_thread.username))
             
         return self.database.format_to_tktable(connected_list)
+    
+    def get_client_thread_by_ip(self, ip):
+        for client_thread in self.client_threads:
+            if client_thread.ip == ip:
+                return client_thread
+        return None
 
+class ClientThread(Thread): 
+    def __init__(self, ip, port, client_socket, username): 
+        Thread.__init__(self) 
+        self.ip = ip 
+        self.port = port
+        self.client_socket = client_socket
+        self.username = username
+        self.messages = []
+        self.lock = Lock()  # Create a threading lock
+        print("[+] New server socket thread started for " + ip + ":" + str(port))
 
+    def run(self): 
+        while True: 
+            for cmmd, data in self.messages:
+                self.client_socket.send(f"{cmmd}{str(len(data)).zfill(8)}{data}".encode('utf-8'))
+                self.messages.remove(cmmd, data)
+                
+            # Check if the client socket is ready for receiving data
+            rlist, _, _ = select.select([self.client_socket], [], [], 0)
+            if self.client_socket in rlist:
+                cmmd = self.client_socket.recv(1).decode('utf-8')
+                data_len = int(self.client_socket.recv(8).decode('utf-8'))
+                data = self.client_socket.recv(data_len).decode('utf-8')
+                
+                #TODO: Process the received data here
+                print(f"Command: {cmmd}, Data: {data}")
+
+    def append_message(self, cmmd, data=''):
+        with self.lock:  # Acquire the lock before modifying the messages list
+            self.messages.append((cmmd, data))
 
 if __name__ == "__main__":
     server = Server(host='0.0.0.0', port=5000)

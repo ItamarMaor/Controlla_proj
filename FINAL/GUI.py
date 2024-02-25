@@ -10,6 +10,8 @@ palette = {
     'button_color': '#51b0d7'
 }
 
+commands = {'disconnect': 0, 'shutdown': 1, 'screenshot': 2, 'block': 3, 'unblock': 4, 'vote': 5}
+
 class CustomTkinterTable(TableCanvas):
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
@@ -50,8 +52,8 @@ class CustomTkinterTable(TableCanvas):
     
 class Gui:
     def __init__(self):
-        self.server = Server('127.0.0.1',5000)
-        self.server.start()
+        self.server = ''
+        self.database = Database()
         self.username = ''
 
     def login(self):
@@ -63,17 +65,19 @@ class Gui:
         def login_button_function():
             uname = username_entry.get()
             password = password_entry.get()
-            if self.server.database.check_user(uname, password):
+            if self.database.check_user(uname, password):
                 # messagebox.showinfo("good", 'good job')
                 self.username = uname
                 login_window.destroy()
+                self.server = Server('127.0.0.1',5000)
+                self.server.start()
                 self.admin_window()
 
         def signup_button_function():
             uname = username_entry.get()
             password = password_entry.get()
-            if not self.server.database.check_user(uname, password):
-                self.server.database.insert_user(uname, password)
+            if not self.database.check_user(uname, password):
+                self.database.insert_user(uname, password)
                 # messagebox.showinfo("good", 'good job')
                 self.username = uname
                 login_window.destroy()
@@ -172,7 +176,16 @@ class Gui:
             # Now you can use the 'ip' variable in this function as needed
 
         def additional_button_clicked(ip, column, row):
-            self.server.request_data(column,ip,)
+            client = self.server.get_client_thread_by_ip(ip)
+            if column == 1:
+                cmmd = commands['shutdown']
+            elif column == 2:
+                cmmd = commands['screenshot']
+            elif column == 3:
+                cmmd = commands['block']
+                #TODO: Make sure to block\unblock according to it's current state
+                
+            client.append_message(cmmd)
             print(f'You clicked the additional button {column} for IP {ip}')
             # Now you can use the 'ip' variable in this function as needed
 
