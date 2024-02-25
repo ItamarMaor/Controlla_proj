@@ -24,8 +24,11 @@ class WindowBlocker(threading.Thread):
 
         label = tk.Label(self.root, text="Computer blocked.\nListen to your teacher now!",
                          font=("Garamond", 25), fg='white', bg='black')
+        logo = tk.Label(self.root, text="Controlla",
+                    font=("Garamond", 20), fg='white', bg='black')
         label.pack(side="top", fill="both", expand=True)
-        tk.Button(self.root, text="Unblock", command=self.unblock).pack(side="bottom", fill="both", expand=True)
+        logo.pack(side="bottom", fill="both", expand=True)
+        tk.Button(self.root, text="Unblock", command=self.unblock).pack(side="bottom")
 
         while self.block_key:
             self.root.update()
