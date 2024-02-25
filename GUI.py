@@ -176,14 +176,25 @@ class Gui:
         allows to add/remove sites from the list'''
         def on_click(button_name):
             cmmd = commands[button_name]
-            selected_index = self.listbox.curselection()[0]  # Get the index of the selected item
-            client_thread = self.server.get_client_thread_by_listbox_selection(self.listbox.get(selected_index).split(' '))
-            
+            if all_checkbox_var.get() != 1:
+                selected_index = self.listbox.curselection()[0]  # Get the index of the selected item
+                client_thread = self.server.get_client_thread_by_listbox_selection(self.listbox.get(selected_index).split(' '))
+
+            if all_checkbox_var.get() == 1:
+                threads_list = self.server.client_threads
+            else:
+                threads_list = [client_thread]
+
             data = ''
             if button_name == 'vote':
                 data = 'vote' #TODO - make sure to append data according to vote
-                
-            if button_name == 'block':
+            elif button_name == 'block':
+                toggle_block_state(threads_list)
+            else:
+                append_message_to_threads(threads_list, cmmd, data)
+
+        def toggle_block_state(threads_list):
+            for client_thread in threads_list:
                 if client_thread.is_blocked:
                     # Command: unblock
                     cmmd = 4
@@ -192,7 +203,11 @@ class Gui:
                     cmmd = 3
                 client_thread.toggle_block_state()
                 switch_block_button_text(client_thread)
-            client_thread.append_message(cmmd, data)
+                client_thread.append_message(cmmd, '')
+
+        def append_message_to_threads(threads_list, cmmd, data):
+            for client_thread in threads_list:
+                client_thread.append_message(cmmd, data)
             
         def on_select(event):
             selected_index = self.listbox.curselection()[0]
@@ -213,50 +228,88 @@ class Gui:
         self.listbox.bind('<<ListboxSelect>>', on_select)
         button_frame = tk.Frame(admin_root)  # Create a frame to hold the buttons
 
+        welcome_label = tk.Label(
+            admin_root,
+            text=f"\nHello {self.username}",
+            font=("Garamond", 20),
+            fg=palette['text_color']
+        )
+
         shutdown_button = tk.Button(
             button_frame,
             text='Shutdown',
-            font=("Calibri",14),
-            border=1,
-            width=20,  # Set the width of the button to 20
-            command=lambda: on_click('shutdown')  # Call on_click function with 'shutdown' as argument
+            font=("Garamond", 14),
+            border=0,  # Remove the border
+            width=20,
+            command=lambda: on_click('shutdown'),
+            bg=palette['button_color'],
+            fg=palette['text_color']
         )
         screenshot_button = tk.Button(
             button_frame,
             text='Take Screenshot',
-            font=("Calibri",14),
-            border=1,
-            width=20,  # Set the width of the button to 20
-            command=lambda: on_click('screenshot')  # Call on_click function with 'screenshot' as argument
+            font=("Garamond", 14),
+            border=0,  # Remove the border
+            width=20,
+            command=lambda: on_click('screenshot'),
+            bg=palette['button_color'],
+            fg=palette['text_color']
         )
         block_button = tk.Button(
             button_frame,
             text='Block',
-            font=("Calibri",14),
-            border=1,
-            width=20,  # Set the width of the button to 20
-            command=lambda: on_click('block')  # Call on_click function with 'block' as argument
+            font=("Garamond", 14),
+            border=0,  # Remove the border
+            width=20,
+            command=lambda: on_click('block'),
+            bg=palette['button_color'],
+            fg=palette['text_color']
         )
         vote_button = tk.Button(
             button_frame,
             text='Vote',
-            font=("Calibri",14),
-            border=1,
-            width=20,  # Set the width of the button to 20
-            command=lambda: on_click('vote')  # Call on_click function with 'vote' as argument
+            font=("Garamond", 14),
+            border=0,  # Remove the border
+            width=20,
+            command=lambda: on_click('vote'),
+            bg=palette['button_color'],
+            fg=palette['text_color']
         )
-
-        self.listbox.pack(side=tk.LEFT, expand=True)
+        all_checkbox_var = tk.IntVar()
+        all_checkbox = tk.Checkbutton(
+            button_frame,
+            text='All',
+            font=("Garamond", 14),
+            width=18,
+            border=0,  # Remove the border
+            bg=palette['background_color'],
+            fg=palette['text_color'],
+            onvalue=1,
+            offvalue=0,
+            variable=all_checkbox_var
+        )
+        
+        welcome_label.pack(side=tk.TOP)
+        self.listbox.pack(side=tk.LEFT, expand=True, padx=2, pady=2)
         button_frame.pack(side=tk.RIGHT, expand=True, padx=2)  # Pack the button frame to the left with some padding
         shutdown_button.pack(side=tk.TOP, pady=2)
         screenshot_button.pack(side=tk.TOP, pady=2)
         block_button.pack(side=tk.TOP, pady=2)
         vote_button.pack(side=tk.TOP, pady=2)
+        all_checkbox.pack(side=tk.TOP, pady=2)
         self.reresh_listbox()
 
         while True:
             admin_root.update_idletasks()
             admin_root.update()
+            
+            if all_checkbox_var.get() == 1:
+                vote_button.config(state=tk.DISABLED)
+                screenshot_button.config(state=tk.DISABLED)
+            else:
+                vote_button.config(state=tk.NORMAL)
+                screenshot_button.config(state=tk.NORMAL)
+            
             
             if self.server.refresh:
                 self.reresh_listbox()
