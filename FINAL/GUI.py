@@ -50,7 +50,8 @@ class CustomTkinterTable(TableCanvas):
     
 class GUI:
     def __init__(self):
-        self.server = MultiThreadedServer('127.0.0.1',8080)
+        self.server = MultiThreadedServer('127.0.0.1',5000)
+        self.server.start_server()
         self.username = ''
 
     def login(self):
@@ -166,48 +167,42 @@ class GUI:
         login_window.mainloop()
 
     def admin_window(self):
-        def button_clicked(row):
-            print(f'You clicked the button on row {row}')
+        def button_clicked(ip, row):
+            print(f'You clicked the button on row {row} with IP {ip}')
+            # Now you can use the 'ip' variable in this function as needed
 
-        # Create a function to handle additional button clicks
-        def additional_button_clicked(column, row):
-            print(f'You clicked the additional button {column} on row {row}')
+        def additional_button_clicked(ip, column, row):
+            self.server.request_data(column,ip,)
+            print(f'You clicked the additional button {column} for IP {ip}')
+            # Now you can use the 'ip' variable in this function as needed
 
         root = tk.Tk()
 
-        # Create a frame to hold the table
         table_frame = tk.Frame(root)
         table_frame.pack(expand=True, fill=tk.BOTH)
 
-        # Create a frame to hold the buttons below the table
         button_frame = tk.Frame(root)
         button_frame.pack()
 
-        # Data for the table
         data = self.server.database.format_to_tktable()
 
-        # Create the table
         table = CustomTkinterTable(table_frame, data=data)
         table.createTableFrame()
 
-        # Loop through the rows and add buttons to each one
         for row_key, row_data in data.items():
             row_index = list(data.keys()).index(row_key)
             for i in range(3):
-                # Get the coordinates of the cell
                 x1, y1, x2, y2 = table.getCellCoords(row_index, 2 + i)
-                # Create a button widget
                 if i % 3 == 0:
                     btn_text = 'Shutdown'
                 elif i % 3 == 1:
                     btn_text = 'Screenshot'
                 else:
                     btn_text = 'Block'
-                btn = tk.Button(table, text=btn_text, command=lambda r=row_key, c=i: additional_button_clicked(c + 1, r))
-                # Add the button to the canvas
+                ip = row_data['IP']  # Get the IP value from the row data
+                btn = tk.Button(table, text=btn_text, command=lambda r=row_key, c=i, ip=ip: additional_button_clicked(ip, c + 1, r))
                 table.create_window(((x1 + x2) // 2, (y1 + y2) // 2), window=btn)
 
-        # Add three buttons below the table
         btn1 = tk.Button(button_frame, text="Add Student")
         btn1.pack(side=tk.LEFT)
         btn2 = tk.Button(button_frame, text="Block All")
@@ -272,6 +267,7 @@ class GUI:
             
 if __name__ == '__main__':
     
-  app = GUI()
-  app.login()
+    app = GUI()
+    app.login()
+    # self.server.start_server()
   

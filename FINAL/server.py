@@ -16,72 +16,45 @@ class MultiThreadedServer():
         self.database = Database()
         self.messages_lock = threading.Lock()
         self.clients = {}  # Dictionary to store connected clients
-        self.usernames = {} #Dictionary to store usernames to client address and socket
+        self.usernames = {} # Dictionary to store usernames to client address and socket
         self.client_threads = []
         self.username = ""
         self.utills = ServerFunctions
-        
+        self.messages = []
         
         print(f"Server listening on {self.host}:{self.port}")
 
+
     def start_server(self):
-            while True:
-                client_socket, client_address = self.server_socket.accept()
-                self.username = self.utills.client_username(self)
-                # data = client_socket.recv(1024)
-                # if data:
-                #     self.username = data.decode('utf-8')
-                print(f"\nAccepted connection from user: {self.username} - {client_address}")
-                # Store client socket in the dictionary
-                self.clients[client_address] = client_socket
-                self.usernames[self.username] = (client_socket)
-                client_handler = threading.Thread(target=self.handle_client, args=(client_socket, client_address))
-                client_handler.start()
-                self.client_threads.append(client_handler)
+        # Start the handle_client method in a separate thread
+        message_handler_thread = threading.Thread(target=self.handle_client)
+        message_handler_thread.daemon = True  # Daemonize the thread to allow program exit
+        message_handler_thread.start()
 
-            self.server_socket.close()
-    
-    def new_handle_client (self, cl):
-        return None
-    
-    def handle_client(self, client_socket, client_address):
-            while True:
-                # self.timeout_between_threads
-                with threading.Lock():
-                    # Choose who to send the message
-                    target_address = input("""Choose target client"
-                                           Type 'all' for all clients
-                                           type the client's name for a specific client
-                                           type 'exit' to end """)
-                    # target_address = "all"
-                    
-                    # Check if the message is a command to exit
-                    if target_address.lower() == "exit":
-                        break
-                    if target_address == 'all':
-                        message = input("""Enter a message to send to all: 
-                                        Type 'shutdown' to shutdown a client
-                                        Type 'disable wifi' to shutdown a client
-                                        Type 'enable wifi' to shutdown a client""")
-                        self.broadcast(message)
-                    # Input the message
-                    else:
-                        message = input("""Enter a message:
-                                        Type 'shutdown' to shutdown a client
-                                        Type 'disable wifi' to shutdown a client
-                                        Type 'enable wifi' to shutdown a client""")
+        while True:
+            client_socket, client_address = self.server_socket.accept()
+            self.username = self.utills.client_username(self)
+            print(f"\nAccepted connection from user: {self.username} - {client_address}")
+            self.clients[client_address] = client_socket
+            self.usernames[self.username] = client_socket
 
-                        # send the messages for the specific client
-                        self.send_to_client(target_address, message)
-                
-            self.client_exit(client_socket, client_address)
 
-    # def timeout_between_threads(self):
-    #     event = threading.Event()
-    #     i_time_value = 2  # Set the timeout value in seconds
-    #     t = threading.Timer(i_time_value, event.set(), [event])
-    #     t.start()
-        
+    def handle_client(self):
+        while True:
+            # print("Checking messages...")
+            # with self.messages_lock:
+                if self.messages:
+                    print("Messages found, processing...")
+                    for message in self.messages[:]:
+                        cmmd, dst_addr, data = message
+                        print(f"Command: {cmmd}, Destination Address: {dst_addr}, Data: {data}")
+
+                        # Remove the tuple from the original list
+                        self.messages.remove(message)
+                # else:
+                    # print("No messages to process.")
+
+
     def client_exit(self, client_socket, client_address):
         del self.clients[client_address]
         client_socket.close()
@@ -94,7 +67,6 @@ class MultiThreadedServer():
             except Exception as e:
                 print(f"Error broadcasting message to client: {e}")
 
-
     def send_to_client(self, target_address, message):
         try:
             target_socket = self.usernames.get(target_address)
@@ -106,9 +78,13 @@ class MultiThreadedServer():
             print(f"Error sending message to client: {e}")
             
     def request_data(self, cmmd, dst_addr, data=''):
-        '''allows to gui to add messages to be sent, uses the threading lock in order to stop the thread to be able to insert to the messages list'''
+        '''Allows GUI to add messages to be sent. Uses threading lock to safely insert into the messages list.'''
         with self.messages_lock:
-            self.messages.append((cmmd, dst_addr, data))
+            message = (cmmd, dst_addr, data)  # Keep the tuple
+            self.messages.append(message)
+            text = ' '.join(map(str, message))  # Convert the tuple to string for printing
+            print("what up my man", text)
+
 
 
 if __name__ == "__main__":
