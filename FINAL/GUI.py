@@ -2,7 +2,7 @@ import tkinter as tk
 from tkintertable import TableCanvas
 from tkinter import messagebox
 from server_utilities import Database
-from server import MultiThreadedServer
+from server import Server
 
 palette = {
     'background_color': '#b2b2b2',
@@ -48,10 +48,10 @@ class CustomTkinterTable(TableCanvas):
     def unbind_keyboard_events(self):
         pass
     
-class GUI:
+class Gui:
     def __init__(self):
-        self.server = MultiThreadedServer('127.0.0.1',5000)
-        self.server.start_server()
+        self.server = Server('127.0.0.1',5000)
+        self.server.start()
         self.username = ''
 
     def login(self):
@@ -184,7 +184,7 @@ class GUI:
         button_frame = tk.Frame(root)
         button_frame.pack()
 
-        data = self.server.database.format_to_tktable()
+        data = self.server.get_connected_clients()
 
         table = CustomTkinterTable(table_frame, data=data)
         table.createTableFrame()
@@ -267,7 +267,7 @@ class GUI:
             
 if __name__ == '__main__':
     
-    app = GUI()
+    app = Gui()
     app.login()
     # self.server.start_server()
   

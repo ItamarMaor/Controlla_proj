@@ -88,45 +88,50 @@ class Database:
         cursor.execute('DELETE FROM students WHERE name = ?', (name,))
         conn.close()
         
-    def format_to_tktable(self):
+    def format_to_tktable(self, data):
         conn, cursor = self.create_conn()
         
         data_dict = {}
         
-        cursor.execute("SELECT ip, name FROM students")
-        rows = cursor.fetchall()
+        # cursor.execute("SELECT ip, name FROM students")
+        # rows = cursor.fetchall()
+        # print(rows)
         
         # Populate the dictionary
-        for idx, row in enumerate(rows):
+        for idx, row in enumerate(data):
             rec_key = f'rec{idx+1}'
             data_dict[rec_key] = {'IP': row[0], 'Name': row[1], 'Shutdown': None, 'Screenshare': None, 'Block': None}
         
         # Close the connection
         conn.close()
         
+        print(data_dict)
         return data_dict
 
-class ServerFunctions:
-    def __init__(self):
-       self.input_request = self.client_username
-    def client_username(self):
-        def get_name_input():
-            name_input = simpledialog.askstring("student name", "Enter the name for student :")
-            student_name_mb.destroy()
-            return name_input
+class ServerFunctions():   
+    def ask_for_username(self):
+        def on_click():
+            global uname
+            uname = name_entry.get()
+            root.destroy()
+        
+        root = tk.Tk()
+        header = tk.Label(root, text='Enter client username')
+        name_entry = tk.Entry(root)
+        ok_button = tk.Button(root, text='OK', command=on_click)
+        header.pack()
+        name_entry.pack()
+        ok_button.pack()
+        
+        root.mainloop()    
+        
+        return uname
 
-        student_name_mb = tk.Tk()
-        student_name_mb.withdraw()  # Hide the main window
-        client_name = get_name_input()
-        student_name_mb.mainloop()
-        return client_name
-        
 
         
-if __name__ == '__main__':
-        
+if __name__ == '__main__':  
     a = Database()
-    # a.insert_student('1227.0.0.1', 'bb')
+    # # a.insert_student('1227.0.0.1', 'bb')
     print(a.format_to_tktable())
 
     

@@ -4,8 +4,9 @@ import tkinter as tk
 from tkinter import simpledialog
 from server_utilities import Database
 from server_utilities import ServerFunctions
+from threading import Thread
 
-class MultiThreadedServer():
+class Server(Thread):
     def __init__(self, host, port):
         super().__init__()
         self.host = host
@@ -15,44 +16,31 @@ class MultiThreadedServer():
         self.server_socket.listen(5)
         self.database = Database()
         self.messages_lock = threading.Lock()
-        self.clients = {}  # Dictionary to store connected clients
-        self.usernames = {} # Dictionary to store usernames to client address and socket
-        self.client_threads = []
+        self.client_data = []
         self.username = ""
-        self.utills = ServerFunctions
+        self.utills = ServerFunctions()
         self.messages = []
         
         print(f"Server listening on {self.host}:{self.port}")
 
 
-    def start_server(self):
-        # Start the handle_client method in a separate thread
-        message_handler_thread = threading.Thread(target=self.handle_client)
-        message_handler_thread.daemon = True  # Daemonize the thread to allow program exit
-        message_handler_thread.start()
-
+    def run(self):
         while True:
             client_socket, client_address = self.server_socket.accept()
-            self.username = self.utills.client_username(self)
-            print(f"\nAccepted connection from user: {self.username} - {client_address}")
-            self.clients[client_address] = client_socket
-            self.usernames[self.username] = client_socket
+            self.client_username = self.utills.ask_for_username()
+            print(f"\nAccepted connection from user: {self.client_username} - {client_address}")
+            client_thread = threading.Thread(target=self.handle_client, args=(client_socket,))
+            client_thread.start()
+            self.client_data.append((client_thread, client_address, self.client_username))
 
 
-    def handle_client(self):
+    def handle_client(self, client_socket):
         while True:
-            # print("Checking messages...")
-            # with self.messages_lock:
-                if self.messages:
-                    print("Messages found, processing...")
-                    for message in self.messages[:]:
-                        cmmd, dst_addr, data = message
-                        print(f"Command: {cmmd}, Destination Address: {dst_addr}, Data: {data}")
+            for message in self.messages[:]:
+                cmmd, dst_addr, data = message
+                print(f"Command: {cmmd}, Destination Address: {dst_addr}, Data: {data}")
 
-                        # Remove the tuple from the original list
-                        self.messages.remove(message)
-                # else:
-                    # print("No messages to process.")
+                self.messages.remove(message)
 
 
     def client_exit(self, client_socket, client_address):
@@ -84,9 +72,17 @@ class MultiThreadedServer():
             self.messages.append(message)
             text = ' '.join(map(str, message))  # Convert the tuple to string for printing
             print("what up my man", text)
+            
+    def get_connected_clients(self):
+        connected_list = []
+        
+        for _, client_address, client_username in self.client_data:
+            connected_list.append((client_address[0], client_username))
+            
+        return self.database.format_to_tktable(connected_list)
 
 
 
 if __name__ == "__main__":
-    server = MultiThreadedServer(host='0.0.0.0', port=5000)
-    server.start_server()
+    server = Server(host='0.0.0.0', port=5000)
+    server.start()
