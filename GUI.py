@@ -167,8 +167,6 @@ class Gui:
         password_label.place(relx=0.25, rely=0.4, anchor='e')
         logo.place(relx=0.5, rely=0.9, anchor='center')
 
-
-
         login_window.mainloop()
 
     def admin_window(self):
@@ -177,13 +175,9 @@ class Gui:
         def on_click(button_name):
             cmmd = commands[button_name]
             if all_checkbox_var.get() != 1:
-                selected_index = self.listbox.curselection()[0]  # Get the index of the selected item
-                client_thread = self.server.get_client_thread_by_listbox_selection(self.listbox.get(selected_index).split(' '))
-
-            if all_checkbox_var.get() == 1:
-                threads_list = self.server.client_threads
+                threads_list = [get_thread_by_listbox_selection()]
             else:
-                threads_list = [client_thread]
+                threads_list = self.server.client_threads
 
             data = ''
             if button_name == 'vote':
@@ -193,14 +187,19 @@ class Gui:
             else:
                 append_message_to_threads(threads_list, cmmd, data)
 
-        def toggle_block_state(threads_list):
+        def toggle_block_state(threads_list, type='switch'):
             for client_thread in threads_list:
-                if client_thread.is_blocked:
-                    # Command: unblock
-                    cmmd = 4
-                else:
-                    # Command: block
+                if type == 'switch':
+                    if client_thread.is_blocked:
+                        # Command: unblock
+                        cmmd = 4
+                    else:
+                        # Command: block
+                        cmmd = 3
+                elif type == 'block':
                     cmmd = 3
+                elif type == 'unblock':
+                    cmmd = 4
                 client_thread.toggle_block_state()
                 switch_block_button_text(client_thread)
                 client_thread.append_message(cmmd, '')
@@ -219,6 +218,10 @@ class Gui:
                 block_button.config(text='Unblock')
             else:
                 block_button.config(text='Block')
+                
+        def get_thread_by_listbox_selection():
+            selected_index = self.listbox.curselection()[0]
+            return self.server.get_client_thread_by_listbox_selection(self.listbox.get(selected_index).split(' '))
             
         admin_root = tk.Tk()
         admin_root.geometry('700x500')

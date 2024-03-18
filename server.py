@@ -113,8 +113,14 @@ class ClientThread(Thread):
             pass
         elif cmmd == 2:
             # Command: screenshot
-            data = pickle.loads(data)
-            self.utills.show_screenshot(data)
+            try:
+                data = pickle.loads(data)
+                cont = True
+            except:
+                self.append_message(2)
+                cont = False
+            if cont:
+                self.utills.show_screenshot(data)
         elif cmmd in (3,4):
             # Command: block/unblock
             pass

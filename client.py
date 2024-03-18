@@ -56,7 +56,8 @@ class Client:
             elif cmmd == '3':
                 # Command: block
                 self.messages.append((3, 'blocked'))
-                self.blocker.start()
+                if not self.blocker.is_alive():
+                    self.blocker.start()
             elif cmmd == '4':
                 # Command: unblock
                 self.blocker.unblock()
