@@ -6,8 +6,9 @@ import gzip
 import pickle
 from client_utils import WindowBlocker 
 import tkinter as tk
+from tkinter import messagebox
 
-commands = {'get_client_username': 0, 'shutdown': 1, 'screenshot': 2, 'block': 3, 'unblock': 4, 'vote': 5}
+commands = {'get_client_username': 0, 'shutdown': 1, 'screenshot': 2, 'block': 3, 'unblock': 4, 'announce': 5}
 
 class Client:
     def __init__(self, server_address, server_port):
@@ -52,6 +53,9 @@ class Client:
                 self.blocker.unblock()
                 self.messages.append((4, 'unblocked'))
                 self.blocker = WindowBlocker()
+            elif cmmd == '5':
+                # Command: announce
+                messagebox.showinfo("Announcement", data) 
     
     def shutdown_computer(self):
         self.client_socket.close()

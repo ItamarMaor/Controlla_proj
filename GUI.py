@@ -2,6 +2,7 @@ import tkinter as tk
 from tkintertable import TableCanvas
 from tkinter import messagebox
 from server_utilities import Database
+from server_utilities import ServerFunctions
 from server import Server
 
 palette = {
@@ -10,7 +11,7 @@ palette = {
     'button_color': '#51b0d7'
 }
 
-commands = {'disconnect': 0, 'shutdown': 1, 'screenshot': 2, 'block': 3, 'unblock': 4, 'vote': 5}
+commands = {'disconnect': 0, 'shutdown': 1, 'screenshot': 2, 'block': 3, 'unblock': 4, 'announce': 5}
 
 class CustomTkinterTable(TableCanvas):
     def __init__(self, parent, *args, **kwargs):
@@ -54,6 +55,7 @@ class Gui:
     def __init__(self):
         self.server = ''
         self.database = Database()
+        self.server_functions = ServerFunctions()
         self.username = ''
         self.listbox = ''
 
@@ -174,14 +176,16 @@ class Gui:
         allows to add/remove sites from the list'''
         def on_click(button_name):
             cmmd = commands[button_name]
+            print(button_name,cmmd)
             if all_checkbox_var.get() != 1:
                 threads_list = [get_thread_by_listbox_selection()]
             else:
                 threads_list = self.server.client_threads
 
             data = ''
-            if button_name == 'vote':
-                data = 'vote' #TODO - make sure to append data according to vote
+            if button_name == 'announce':
+                data = announcement_entry.get()
+                append_message_to_threads(threads_list, cmmd, data)
             elif button_name == 'block':
                 toggle_block_state(threads_list)
             else:
@@ -203,9 +207,40 @@ class Gui:
                 client_thread.toggle_block_state()
                 switch_block_button_text(client_thread)
                 client_thread.append_message(cmmd, '')
+                
+        def on_announcment_click():
+            global announcement_entry, submit_button, announcement_frame
+            
+            announce_button.pack_forget()
+            all_checkbox.pack_forget()
+            
+            announcement_frame = tk.Frame(button_frame)
+            announcement_entry = tk.Entry(announcement_frame, font=("Garamond", 19), width=15)
+            submit_button = tk.Button(announcement_frame,
+                text="v",
+                command=announcement_revert,
+                font=("Garamond", 14),
+                border=0,  # Remove the border
+                width=2,
+                bg=palette['button_color'],
+                fg=palette['text_color'])
+            
+            announcement_entry.pack(side=tk.LEFT, padx=2)
+            submit_button.pack(side=tk.LEFT, pady=2, padx=2)
+            announcement_frame.pack(side=tk.TOP, pady=2)
+            all_checkbox.pack(side=tk.TOP, pady=2)
+
+        def announcement_revert():
+            announcement_frame.pack_forget()
+            all_checkbox.pack_forget()
+            announce_button.pack(side=tk.TOP, pady=2)
+            all_checkbox.pack(side=tk.TOP, pady=2)
+            
+            on_click('announce')
 
         def append_message_to_threads(threads_list, cmmd, data):
             for client_thread in threads_list:
+                print(cmmd, data)
                 client_thread.append_message(cmmd, data)
             
         def on_select(event):
@@ -230,7 +265,7 @@ class Gui:
         self.listbox = tk.Listbox(admin_root)
         self.listbox.bind('<<ListboxSelect>>', on_select)
         button_frame = tk.Frame(admin_root)  # Create a frame to hold the buttons
-
+        
         welcome_label = tk.Label(
             admin_root,
             text=f"\nHello {self.username}",
@@ -243,7 +278,7 @@ class Gui:
             text='Shutdown',
             font=("Garamond", 14),
             border=0,  # Remove the border
-            width=20,
+            width=21,
             command=lambda: on_click('shutdown'),
             bg=palette['button_color'],
             fg=palette['text_color']
@@ -253,7 +288,7 @@ class Gui:
             text='Take Screenshot',
             font=("Garamond", 14),
             border=0,  # Remove the border
-            width=20,
+            width=21,
             command=lambda: on_click('screenshot'),
             bg=palette['button_color'],
             fg=palette['text_color']
@@ -263,18 +298,18 @@ class Gui:
             text='Block',
             font=("Garamond", 14),
             border=0,  # Remove the border
-            width=20,
+            width=21,
             command=lambda: on_click('block'),
             bg=palette['button_color'],
             fg=palette['text_color']
         )
-        vote_button = tk.Button(
+        announce_button = tk.Button(
             button_frame,
-            text='Vote',
+            text='Announce',
             font=("Garamond", 14),
             border=0,  # Remove the border
-            width=20,
-            command=lambda: on_click('vote'),
+            width=21,
+            command=lambda: on_announcment_click(),
             bg=palette['button_color'],
             fg=palette['text_color']
         )
@@ -283,7 +318,7 @@ class Gui:
             button_frame,
             text='All',
             font=("Garamond", 14),
-            width=18,
+            width=19,
             border=0,  # Remove the border
             bg=palette['background_color'],
             fg=palette['text_color'],
@@ -298,7 +333,7 @@ class Gui:
         shutdown_button.pack(side=tk.TOP, pady=2)
         screenshot_button.pack(side=tk.TOP, pady=2)
         block_button.pack(side=tk.TOP, pady=2)
-        vote_button.pack(side=tk.TOP, pady=2)
+        announce_button.pack(side=tk.TOP, pady=2)
         all_checkbox.pack(side=tk.TOP, pady=2)
         self.reresh_listbox()
 
@@ -307,10 +342,8 @@ class Gui:
             admin_root.update()
             
             if all_checkbox_var.get() == 1:
-                vote_button.config(state=tk.DISABLED)
                 screenshot_button.config(state=tk.DISABLED)
             else:
-                vote_button.config(state=tk.NORMAL)
                 screenshot_button.config(state=tk.NORMAL)
             
             

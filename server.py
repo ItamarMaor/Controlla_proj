@@ -21,17 +21,16 @@ class Server(Thread):
         self.messages_lock = threading.Lock()
         self.client_threads = []
         self.username = ""
-        self.utills = ServerFunctions()
+        self.utils = ServerFunctions()
         self.messages = []
         self.refresh = False
         
         print(f"Server listening on {self.host}:{self.port}")
 
-
     def run(self):
         while True:
             client_socket, client_address = self.server_socket.accept()
-            client_username = self.utills.ask_for_username()
+            client_username = self.utils.recv_uname(client_socket)
             print(f"\nAccepted connection from user: {client_username} - {client_address}")
             client_thread = ClientThread(client_address[0], client_address[1], client_socket, client_username)
             client_thread.start()
@@ -42,7 +41,7 @@ class Server(Thread):
         del self.clients[client_address]
         client_socket.close()
         print(f"Client at {client_address} has disconnected")
-
+        
     def broadcast(self, message):
         for client_socket in self.clients.values():
             try:
@@ -76,7 +75,7 @@ class Server(Thread):
 class ClientThread(Thread): 
     def __init__(self, ip, port, client_socket, username): 
         Thread.__init__(self) 
-        self.utills = ServerFunctions()
+        self.utils = ServerFunctions()
         self.ip = ip 
         self.port = port
         self.client_socket = client_socket
@@ -120,12 +119,12 @@ class ClientThread(Thread):
                 self.append_message(2)
                 cont = False
             if cont:
-                self.utills.show_screenshot(data)
+                self.utils.show_screenshot(data)
         elif cmmd in (3,4):
             # Command: block/unblock
             pass
         elif cmmd == 5:
-            # Command: vote
+            # Command: announce
             pass
         else:
             data = data.decode('utf-8')

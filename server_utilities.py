@@ -93,25 +93,45 @@ class Database:
         cursor.execute('DELETE FROM students WHERE name = ?', (name,))
         conn.close()
 
-class ServerFunctions():   
-    def ask_for_username(self):
-        while True:
-            # Check if the client socket is ready for receiving data
-            rlist, _, _ = select.select([self.client_socket], [], [], 60)
-            if self.client_socket in rlist:
-                cmmd = self.client_socket.recv(1).decode('utf-8')
-                client_username_len = int(self.client_socket.recv(8).decode('utf-8'))
-                client_username = self.client_socket.recv(client_username_len)
-                break
-        return client_username    
-    
+class ServerFunctions():    
     def show_screenshot(self, data):
         '''this function translates the photo from byte back to png and shows it'''
         decompressed_data = gzip.decompress(data)
         image = Image.frombytes("RGB", (1920, 1080), decompressed_data)
         image.show()
 
-
+    def annoucment_input(self):
+        def on_click():
+            global announcment_msg
+            announcment_msg = announcment_entry.get()
+            root.destroy()
+        
+        root = tk.Tk()
+        root.wm_attributes("-topmost", True)
+        header = tk.Label(root, text='Enter your annoucment')
+        announcment_entry = tk.Entry(root)
+        ok_button = tk.Button(root, text='OK', command=on_click)
+        header.pack()
+        announcment_entry.pack()
+        ok_button.pack()
+        
+        root.mainloop()    
+        
+        return announcment_msg
+    
+    def recv_uname(self, conn_client_socket):
+        print("Asking for username")
+        while True:
+            # Check if the client socket is ready for receiving data
+            rlist, _, _ = select.select([conn_client_socket], [], [], 60)
+            if conn_client_socket in rlist:
+                cmmd = conn_client_socket.recv(1).decode('utf-8')
+                client_username_len = int(conn_client_socket.recv(8).decode('utf-8'))
+                client_username = conn_client_socket.recv(client_username_len)
+                client_username = client_username.decode('utf-8')
+                break
+        return client_username   
+    
 if __name__ == '__main__':  
     pass
     
