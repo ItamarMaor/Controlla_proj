@@ -6,6 +6,7 @@ import gzip
 from threading import Thread
 import threading
 import time
+import select
 
 class Database:
     def __init__(self):
@@ -94,23 +95,15 @@ class Database:
 
 class ServerFunctions():   
     def ask_for_username(self):
-        def on_click():
-            global uname
-            uname = name_entry.get()
-            root.destroy()
-        
-        root = tk.Tk()
-        root.wm_attributes("-topmost", True)
-        header = tk.Label(root, text='Enter client username')
-        name_entry = tk.Entry(root)
-        ok_button = tk.Button(root, text='OK', command=on_click)
-        header.pack()
-        name_entry.pack()
-        ok_button.pack()
-        
-        root.mainloop()    
-        
-        return uname
+        while True:
+            # Check if the client socket is ready for receiving data
+            rlist, _, _ = select.select([self.client_socket], [], [], 60)
+            if self.client_socket in rlist:
+                cmmd = self.client_socket.recv(1).decode('utf-8')
+                client_username_len = int(self.client_socket.recv(8).decode('utf-8'))
+                client_username = self.client_socket.recv(client_username_len)
+                break
+        return client_username    
     
     def show_screenshot(self, data):
         '''this function translates the photo from byte back to png and shows it'''

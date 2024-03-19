@@ -7,7 +7,7 @@ from threading import Lock
 import select
 import pickle
 
-commands = {'disconnect': 0, 'shutdown': 1, 'screenshot': 2, 'block': 3, 'unblock': 4, 'vote': 5}
+commands = {'get_client_username': 0, 'shutdown': 1, 'screenshot': 2, 'block': 3, 'unblock': 4, 'vote': 5}
 
 class Server(Thread):
     def __init__(self, host, port):

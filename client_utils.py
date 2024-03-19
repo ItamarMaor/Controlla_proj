@@ -35,4 +35,23 @@ class WindowBlocker(threading.Thread):
             self.root.update_idletasks()
 
         self.root.destroy()
+    
+# class ClientFunctions():   
+#     def ask_for_username(self):
+#         def on_click():
+#             global uname
+#             uname = name_entry.get()
+#             root.destroy()
         
+#         root = tk.Tk()
+#         root.wm_attributes("-topmost", True)
+#         header = tk.Label(root, text='Enter client username')
+#         name_entry = tk.Entry(root)
+#         ok_button = tk.Button(root, text='OK', command=on_click)
+#         header.pack()
+#         name_entry.pack()
+#         ok_button.pack()
+        
+#         root.mainloop()    
+        
+#         return uname
