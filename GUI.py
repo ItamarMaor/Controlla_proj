@@ -245,7 +245,7 @@ class Gui:
             
         def on_select(event):
             selected_index = self.listbox.curselection()[0]
-            client_thread = self.server.get_client_thread_by_listbox_selection(self.listbox.get(selected_index).split(' '))
+            client_thread = self.server.get_thread_by_ip_and_username(self.listbox.get(selected_index).split(' '))
             switch_block_button_text(client_thread)
 
         def switch_block_button_text(client_thread):
@@ -255,9 +255,21 @@ class Gui:
                 block_button.config(text='Block')
                 
         def get_thread_by_listbox_selection():
-            selected_index = self.listbox.curselection()[0]
-            return self.server.get_client_thread_by_listbox_selection(self.listbox.get(selected_index).split(' '))
-            
+            selected_index = self.listbox.curselection()
+            if selected_index:
+                selected_index = selected_index[0]
+                return self.server.get_thread_by_ip_and_username(self.listbox.get(selected_index).split(' '))
+            return None
+        
+        def on_select(event):
+            selected_index = self.listbox.curselection()
+            if selected_index:
+                selected_index = selected_index[0]
+                client_thread = self.server.get_thread_by_ip_and_username(self.listbox.get(selected_index).split(' '))
+                switch_block_button_text(client_thread)
+            else:
+                selected_index = None
+        
         admin_root = tk.Tk()
         admin_root.geometry('700x500')
         admin_root.title("Admin Controlla")
