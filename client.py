@@ -39,6 +39,7 @@ class Client:
                 pass
             elif cmmd == '1':
                 # Command: shutdown
+                # self.client_socket.close()
                 self.shutdown_computer()
             elif cmmd == '2':
                 # Command: screenshot

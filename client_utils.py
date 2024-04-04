@@ -36,8 +36,9 @@ class WindowBlocker(threading.Thread):
 
         self.root.destroy()
 
-class Encryption():
-    def __init__(self):
+# class Encryption():
+#     def __init__(self):
+#         pass
 
 # class ClientFunctions():   
 #     def ask_for_username(self):
@@ -57,4 +58,4 @@ class Encryption():
         
 #         root.mainloop()    
         
-#         return uname
+#         return uname    pass

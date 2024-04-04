@@ -94,6 +94,9 @@ class ClientThread(Thread):
         for cmmd, data in self.messages:
             self.client_socket.send(f"{cmmd}{str(len(data)).zfill(8)}{data}".encode('utf-8'))
             self.messages.remove((cmmd, data))
+            # if cmmd == 1:
+            #     self.client_threads.remove(self)
+            #     break
     
     def recv_messages(self):
         # Check if the client socket is ready for receiving data
