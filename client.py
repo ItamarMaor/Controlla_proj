@@ -18,7 +18,6 @@ class Client:
         self.messages = []
         self.blocker = WindowBlocker()
         self.encryption = HybridEncryptionClient()
-        # self.utills = ClientFunctions()
 
     def connect(self):
         self.client_socket.connect((self.server_address, self.server_port))

@@ -4,6 +4,7 @@ from tkinter import messagebox
 from server_utilities import Database
 from server_utilities import ServerFunctions
 from server import Server
+import hashlib
 
 palette = {
     'background_color': '#b2b2b2',
@@ -29,18 +30,19 @@ class Gui:
 
         def login_button_function():
             uname = username_entry.get()
-            password = password_entry.get()
+            password = hashlib.sha256(password_entry.get().encode()).hexdigest()
             if self.database.check_user(uname, password):
                 # messagebox.showinfo("good", 'good job')
                 self.username = uname
                 login_window.destroy()
                 self.server = Server('0.0.0.0',5000)
                 self.server.start()
+                self.server.username = uname
                 self.admin_window()
 
         def signup_button_function():
             uname = username_entry.get()
-            password = password_entry.get()
+            password = hashlib.sha256(password_entry.get().encode()).hexdigest()
             if not self.database.check_user(uname, password):
                 self.database.insert_user(uname, password)
                 # messagebox.showinfo("good", 'good job')
@@ -300,8 +302,19 @@ class Gui:
             offvalue=0,
             variable=all_checkbox_var
         )
+        show_log_button = tk.Button(
+            admin_root,
+            text='Show Log',
+            font=("Garamond", 14),
+            border=0,  # Remove the border
+            width=21,
+            bg=palette['button_color'],
+            fg=palette['text_color'],
+            command=lambda: self.show_log()
+        )
         
         welcome_label.pack(side=tk.TOP)
+        show_log_button.pack(side=tk.TOP)
         self.listbox.pack(side=tk.LEFT, expand=True, padx=2, pady=2)
         button_frame.pack(side=tk.RIGHT, expand=True, padx=2)  # Pack the button frame to the left with some padding
         shutdown_button.pack(side=tk.TOP, pady=2)
@@ -309,6 +322,7 @@ class Gui:
         block_button.pack(side=tk.TOP, pady=2)
         announce_button.pack(side=tk.TOP, pady=2)
         all_checkbox.pack(side=tk.TOP, pady=2)
+
         self.reresh_listbox()
 
         while True:
@@ -325,6 +339,25 @@ class Gui:
                 self.reresh_listbox()
                 self.server.refresh = False
 
+    def show_log(self):
+        log_window = tk.Tk()
+        log_window.title("Log")
+        log_window.geometry('1000x500')
+        log_window['background'] = palette['background_color']
+
+        log = tk.Text(
+            log_window,
+            bg=palette['background_color'],
+            fg=palette['text_color'],
+            font=("Garamond", 14)
+        )
+        log.pack(expand=True, fill='both')
+
+        log.insert(tk.END, self.server.get_log_for_teacher(self.username))
+        log.config(state=tk.DISABLED)
+
+        log_window.mainloop()
+    
     def reresh_listbox(self):
         self.listbox.delete(0, tk.END)
         connected_clients = self.server.get_connected_clients()

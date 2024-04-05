@@ -5,11 +5,14 @@ from server_utilities import ServerFunctions
 from server_utilities import HybridEncryptionServer
 from threading import Thread
 from threading import Lock
+import datetime
 import select
 import pickle
+import logging
 
-commands = {'get_client_username': 0, 'shutdown': 1, 'screenshot': 2, 'block': 3, 'unblock': 4, 'vote': 5}
-
+commands = {'get_client_username': 0, 'shutdown': 1, 'screenshot': 2, 'block': 3, 'unblock': 4, 'announce': 5}
+cmmd_num_to_name = {v: k for k, v in commands.items()}
+        
 class Server(Thread):
     def __init__(self, host, port):
         super().__init__()
@@ -26,15 +29,16 @@ class Server(Thread):
         self.utils = ServerFunctions()
         self.messages = []
         self.refresh = False
+        logging.basicConfig(filename='server.log', filemode='a', level=logging.INFO)
         
         print(f"Server listening on {self.host}:{self.port}")
 
     def run(self):
         while True:
-            client_socket, client_address = self.server_socket.accept()
+            client_socket, (ip, port) = self.server_socket.accept()
             client_username = self.utils.recv_uname(client_socket)
-            print(f"\nAccepted connection from user: {client_username} - {client_address}")
-            client_thread = ClientThread(client_address[0], client_address[1], client_socket, client_username)
+            print(f"\nAccepted connection from user: {client_username} - {ip, port}")
+            client_thread = ClientThread(ip, port, client_socket, client_username, self.username)
             client_thread.start()
             self.client_threads.append(client_thread)
             self.refresh = True
@@ -73,9 +77,21 @@ class Server(Thread):
         for client_thread in self.client_threads:
             if [client_thread.ip, client_thread.username] == selection:
                 return client_thread
+            
+    def get_log_for_teacher(self, teachername):
+        filtered_string = ''
+        with open('server.log', 'r') as f:
+            logs = f.readlines()
+            for line in logs:
+                if teachername in line:
+                    filtered_string += line
+                    
+            if filtered_string != '':
+                return filtered_string
+            return 'No logs found for this teacher'
 
 class ClientThread(Thread): 
-    def __init__(self, ip, port, client_socket, username): 
+    def __init__(self, ip, port, client_socket, username, teacher): 
         Thread.__init__(self) 
         self.utils = ServerFunctions()
         self.ip = ip 
@@ -84,6 +100,7 @@ class ClientThread(Thread):
         self.encryption = HybridEncryptionServer()
         self.symetric_key = self.encryption.generate_symetric_key() #new
         self.username = username
+        self.teacher = teacher
         self.messages = []
         self.is_blocked = False
         self.lock = Lock()  # Create a threading lock
@@ -99,6 +116,12 @@ class ClientThread(Thread):
 
     def send_messages(self):
         for cmmd, data in self.messages:
+            timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            
+            if cmmd == commands['announce']:
+                logging.info(f"{timestamp} - Teacher: {self.teacher} - Target: {self.username} {self.ip} - Command: {cmmd_num_to_name[cmmd]} - Data: {data}")
+            else:
+                logging.info(f"{timestamp} - Teacher: {self.teacher} - Target: {self.username} {self.ip} - Command: {cmmd_num_to_name[cmmd]}")
             ciphertext = self.format_message(cmmd, data)
             self.client_socket.send(str(len(ciphertext)).zfill(8).encode())
             self.client_socket.sendall(ciphertext)

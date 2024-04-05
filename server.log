@@ -1,0 +1,12 @@
+INFO:root:2024-04-05 21:08:47 - Teacher: shugi - Target: cake 127.0.0.1 - Command: block
+INFO:root:2024-04-05 21:08:59 - Teacher: shugi - Target: cake 127.0.0.1 - Command: unblock
+INFO:root:2024-04-05 21:09:10 - Teacher: shugi - Target: cake 127.0.0.1 - Command: announce - Data: hi, turn off youtube
+INFO:root:2024-04-05 21:13:42 - Teacher: amit - Target: tal 127.0.0.1 - Command: announce - Data: shut up!
+INFO:root:2024-04-05 21:35:46 - Teacher: mike - Target: noon 127.0.0.1 - Command: announce - Data: bye bye
+INFO:root:2024-04-05 21:35:59 - Teacher: mike - Target: noon 127.0.0.1 - Command: block
+INFO:root:2024-04-05 21:36:01 - Teacher: mike - Target: noon 127.0.0.1 - Command: unblock
+INFO:root:2024-04-05 21:36:19 - Teacher: mike - Target: noon 127.0.0.1 - Command: screenshot
+INFO:root:2024-04-05 21:44:00 - Teacher: Amit - Target: paul 127.0.0.1 - Command: announce - Data: hello daad
+INFO:root:2024-04-05 21:44:18 - Teacher: Amit - Target: paul 127.0.0.1 - Command: announce - Data: kkk
+INFO:root:2024-04-05 21:49:16 - Teacher: roy - Target: amit 127.0.0.1 - Command: announce - Data: bye
+INFO:root:2024-04-05 21:49:24 - Teacher: roy - Target: amit 127.0.0.1 - Command: screenshot
