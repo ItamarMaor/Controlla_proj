@@ -2,6 +2,7 @@ import socket
 import threading
 from server_utilities import Database
 from server_utilities import ServerFunctions
+from server_utilities import HybridEncryptionServer
 from threading import Thread
 from threading import Lock
 import select
@@ -18,6 +19,7 @@ class Server(Thread):
         self.server_socket.bind((self.host, self.port))
         self.server_socket.listen(5)
         self.database = Database()
+        self.encryption = HybridEncryptionServer()
         self.messages_lock = threading.Lock()
         self.client_threads = []
         self.username = ""
@@ -79,6 +81,8 @@ class ClientThread(Thread):
         self.ip = ip 
         self.port = port
         self.client_socket = client_socket
+        self.encryption = HybridEncryptionServer()
+        self.symetric_key = self.encryption.generate_symetric_key() #new
         self.username = username
         self.messages = []
         self.is_blocked = False
@@ -86,13 +90,18 @@ class ClientThread(Thread):
         print("[+] New server socket thread started for " + ip + ":" + str(port))
 
     def run(self): 
+        self.encryption.key = self.encryption.import_public_key(self.client_socket.recv(1024))
+        self.client_socket.sendall(self.encryption.encrypt_asymmetric(self.symetric_key, self.encryption.key))
+        
         while True: 
             self.send_messages()
             self.recv_messages()
 
     def send_messages(self):
         for cmmd, data in self.messages:
-            self.client_socket.send(f"{cmmd}{str(len(data)).zfill(8)}{data}".encode('utf-8'))
+            ciphertext = self.format_message(cmmd, data)
+            self.client_socket.send(str(len(ciphertext)).zfill(8).encode())
+            self.client_socket.sendall(ciphertext)
             self.messages.remove((cmmd, data))
             # if cmmd == 1:
             #     self.client_threads.remove(self)
@@ -102,11 +111,17 @@ class ClientThread(Thread):
         # Check if the client socket is ready for receiving data
         rlist, _, _ = select.select([self.client_socket], [], [], 0)
         if self.client_socket in rlist:
-            cmmd = self.client_socket.recv(1).decode('utf-8')
-            data_len = int(self.client_socket.recv(8).decode('utf-8'))
-            data = self.client_socket.recv(data_len)
+            recv_len = int(self.client_socket.recv(8).decode())
+            ciphertext = self.client_socket.recv(recv_len)
+            
+            cmmd, data = self.encryption.decrypt(ciphertext, self.symetric_key)
 
             self.handle_response(cmmd, data)
+            
+    def format_message(self, cmmd, data):
+        msg = f"{cmmd}{data}".encode()
+        
+        return self.encryption.encrypt(msg, self.symetric_key)
             
     def handle_response(self, cmmd, data):
         cmmd = int(cmmd)
@@ -117,12 +132,9 @@ class ClientThread(Thread):
             # Command: screenshot
             try:
                 data = pickle.loads(data)
-                cont = True
-            except:
-                self.append_message(2)
-                cont = False
-            if cont:
                 self.utils.show_screenshot(data)
+            except:
+                self.append_message(2)      
         elif cmmd in (3,4):
             # Command: block/unblock
             pass

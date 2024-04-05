@@ -13,44 +13,6 @@ palette = {
 
 commands = {'disconnect': 0, 'shutdown': 1, 'screenshot': 2, 'block': 3, 'unblock': 4, 'announce': 5}
 
-class CustomTkinterTable(TableCanvas):
-    def __init__(self, parent, *args, **kwargs):
-        super().__init__(parent, *args, **kwargs)
-        self.disable_interactive_features()
-
-    def disable_interactive_features(self):
-        # Disable editing features
-        self.set_row_values = lambda row, values: None
-        self.insert_row = lambda row, values: None
-        self.delete_row = lambda row: None
-        self.update_row = lambda row, values: None
-        self.update_cell = lambda row, col, value: None
-        self.delete_column = lambda col: None
-        self.startCellEdit = lambda cell, event=None: None
-        self.stopCellEdit = lambda cell: None
-        self.cellEdited = lambda cell: None
-
-        # Disable sorting and filtering features
-        self.sort_column = lambda col, reverse=False: None
-        self.filter_column = lambda col, value: None
-
-        # Unbind mouse and keyboard events
-        self.unbind_mouse_events()
-        self.unbind_keyboard_events()
-
-    # Override bindings for mouse and keyboard events
-    def bind_mouse_events(self):
-        pass
-
-    def unbind_mouse_events(self):
-        pass
-
-    def bind_keyboard_events(self):
-        pass
-
-    def unbind_keyboard_events(self):
-        pass
-    
 class Gui:
     def __init__(self):
         self.server = ''

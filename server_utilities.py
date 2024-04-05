@@ -7,6 +7,9 @@ from threading import Thread
 import threading
 import time
 import select
+from cryptography.fernet import Fernet
+from Crypto.Cipher import PKCS1_OAEP
+from Crypto.PublicKey import RSA
 
 class Database:
     def __init__(self):
@@ -132,8 +135,51 @@ class ServerFunctions():
                 break
         return client_username   
     
-if __name__ == '__main__':  
-    pass
+class HybridEncryptionServer():
+    def __init__(self):
+        # Initialize any necessary variables or objects here
+        self.key = None
+        self.CHUNK_SIZE = 2**32 - 33
+    
+    def generate_symetric_key(self):
+        # Implement code to generate encryption key
+        return Fernet.generate_key()
+    
+    def import_public_key(self, pem_key):
+        return RSA.import_key(pem_key)
+    
+    def encrypt(self, plaintext, symetric_key):
+        cipher = Fernet(symetric_key)
+        ciphertext = b""
+        
+        while plaintext:
+            chunk = plaintext[:self.CHUNK_SIZE]
+            plaintext = plaintext[self.CHUNK_SIZE:]
+            encrypted_chunk = cipher.encrypt(chunk)
+            ciphertext += encrypted_chunk
+    
+        return ciphertext
+    
+    def decrypt(self, ciphertext, symetric_key):
+        cipher = Fernet(symetric_key)
+        plaintext = b""
+
+        while ciphertext:
+            chunk = ciphertext[:self.CHUNK_SIZE]  # Use the same chunk size as encryption
+            ciphertext = ciphertext[self.CHUNK_SIZE:]
+            decrypted_chunk = cipher.decrypt(chunk)
+            plaintext += decrypted_chunk
+    
+        cmmd = plaintext[:1].decode()
+        data = plaintext[1:]
+        
+        return cmmd, data
+    
+    def encrypt_asymmetric(self, plaintext, public_key):
+        # Implement code to encrypt plaintext using asymmetric encryption
+        cipher = PKCS1_OAEP.new(public_key)
+        ciphertext = cipher.encrypt(plaintext)
+        return ciphertext
     
     # # a.insert_student('1227.0.0.1', 'bb')
 

@@ -4,7 +4,7 @@ import os
 from PIL import ImageGrab
 import gzip
 import pickle
-from client_utils import WindowBlocker 
+from client_utils import WindowBlocker, HybridEncryptionClient
 import tkinter as tk
 from tkinter import messagebox
 
@@ -17,19 +17,26 @@ class Client:
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.messages = []
         self.blocker = WindowBlocker()
+        self.encryption = HybridEncryptionClient()
         # self.utills = ClientFunctions()
 
     def connect(self):
         self.client_socket.connect((self.server_address, self.server_port))
         print("Connected to the server.")
+        
         client_username = self.ask_for_username()
         self.client_socket.sendall(f"{commands['get_client_username']}{str(len(client_username)).zfill(8)}".encode('utf-8'))
         self.client_socket.sendall(client_username.encode('utf-8'))
-
+        
+        self.client_socket.sendall(self.encryption.export_public_key())
+        self.encryption.symetric_key = self.encryption.decrypt_asymmetric(self.client_socket.recv(1024), self.encryption.private_key)
+    
     def receive_messages(self):
-        cmmd = self.client_socket.recv(1).decode('utf-8')
-        data_len = int(self.client_socket.recv(8).decode('utf-8'))
-        data = self.client_socket.recv(data_len).decode('utf-8')
+        recv_len = self.client_socket.recv(8).decode('utf-8')
+        ciphertext = self.client_socket.recv(int(recv_len))
+        
+        cmmd, data = self.encryption.decrypt(ciphertext)
+        
         self.handle_requests(cmmd, data)
     
     def handle_requests(self, cmmd, data):
@@ -87,15 +94,21 @@ class Client:
             
             #responsible for responses
             for cmmd, data in self.messages:
-                print(type(cmmd))
-                if cmmd == 2:
-                    self.client_socket.sendall(f"{cmmd}{str(len(data)).zfill(8)}".encode('utf-8'))
-                    self.client_socket.sendall(data)
-                else:
-                    self.client_socket.sendall(f"{cmmd}{str(len(data)).zfill(8)}".encode('utf-8'))
-                    self.client_socket.sendall(data.encode('utf-8'))
+                msg = self.format_message(cmmd, data)
                 
+                self.client_socket.send(f"{str(len(msg)).zfill(8)}".encode('utf-8'))
+                self.client_socket.sendall(msg)
+            
                 self.messages.remove((cmmd, data))
+                
+    def format_message(self, cmmd, data):
+        if cmmd != commands['screenshot']:
+            data = data.encode()
+        
+        msg = f"{cmmd}".encode() + data
+        
+        return self.encryption.encrypt(msg)
+        
     
     def ask_for_username(self):
         def on_click():

@@ -1,24 +1,53 @@
-import tkinter as tk
 
-entry = None
-new_button = None
+import rsa
+from cryptography.fernet import Fernet
+from base64 import b64encode, b64decode
 
-def on_announcment_click():
-    global entry, new_button
-    button.pack_forget()
-    entry = tk.Entry(root)
-    entry.pack(side="left")
-    new_button = tk.Button(root, text="New Button", command=announcement_revert)
-    new_button.pack(side="left")
+# Generate public + private keypair
+publicKey, privateKey = rsa.newkeys(2048)
 
-def announcement_revert():
-    entry.pack_forget()
-    new_button.pack_forget()
-    button.pack()
+# Generate a symmetric key
+symmetricKey = Fernet.generate_key()
+f = Fernet(symmetricKey)
 
-root = tk.Tk()
+# Sample data to encrypt
+data_dict = {'user_id':1, 'name':'John', 'age':30}
+data = str(data_dict)
 
-button = tk.Button(root, text="Click me", command=on_announcment_click)
-button.pack()
+print("\nOriginal data: ", data)
 
-root.mainloop()
+# Encrypt data with symmetric key
+enc_data = f.encrypt(data.encode('utf-8'))
+
+# Convert to base64 for sending over the network
+b64_enc_data = b64encode(enc_data).decode('utf-8')
+
+# publicKey = rsa.PublicKey.load_pkcs1(publicKey)
+enc_symmetricKey = rsa.encrypt(symmetricKey, publicKey)
+
+# Convert the symmetric key to base64 for sending
+# over the network
+b64_enc_symmetricKey = b64encode(enc_symmetricKey).decode('utf-8')
+
+# Create payload
+payload = { 'key':b64_enc_symmetricKey, 'data': b64_enc_data }
+
+print("\nPayload: ", payload)
+
+# Here we send payload over the network
+# And receive it somewhere at the client side
+
+# Decode the symmetric key from base64
+enc_symmetricKey = b64decode(payload['key'])
+
+# Decode the data from base64
+enc_data = b64decode(payload['data'])
+
+# Decrypt the symmetric key
+symmetricKey = rsa.decrypt(enc_symmetricKey, privateKey)
+
+# Decrypt the data
+f = Fernet(symmetricKey)
+data = f.decrypt(enc_data).decode('utf-8')
+
+print("\nDecrypted data: ", data)

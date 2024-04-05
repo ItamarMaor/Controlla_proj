@@ -1,5 +1,8 @@
 import threading
 import tkinter as tk
+from cryptography.fernet import Fernet
+from Crypto.Cipher import PKCS1_OAEP
+from Crypto.PublicKey import RSA
 
 class WindowBlocker(threading.Thread):
     def __init__(self):
@@ -35,6 +38,55 @@ class WindowBlocker(threading.Thread):
             self.root.update_idletasks()
 
         self.root.destroy()
+
+class HybridEncryptionClient():
+    def __init__(self):
+        # Initialize any necessary variables or objects here
+        self.key = RSA.generate(1024)
+        self.public_key = self.key.publickey()
+        self.private_key = self.key
+        self.symetric_key = None
+        self.CHUNK_SIZE = 2**32 - 33
+        
+    def export_public_key(self):
+        return self.public_key.export_key()
+    
+    def encrypt(self, plaintext):
+        # Implement code to encrypt ciphertext using symmetric encryption
+        cipher = Fernet(self.symetric_key)
+        ciphertext = b""
+        
+        while plaintext:
+            chunk = plaintext[:self.CHUNK_SIZE]
+            plaintext = plaintext[self.CHUNK_SIZE:]
+            encrypted_chunk = cipher.encrypt(chunk)
+            ciphertext += encrypted_chunk
+    
+        return ciphertext
+    
+    def decrypt(self, ciphertext):
+        # Implement code to decrypt ciphertext using symmetric encryption
+        cipher = Fernet(self.symetric_key)
+        plaintext = b""
+        
+        while ciphertext:
+            chunk = ciphertext[:self.CHUNK_SIZE]
+            ciphertext = ciphertext[self.CHUNK_SIZE:]
+            decrypted_chunk = cipher.decrypt(chunk)
+            plaintext += decrypted_chunk
+        
+        plaintext = plaintext.decode()
+        cmmd = plaintext[:1]
+        data = plaintext[1:]
+        
+        return cmmd, data
+    
+    def decrypt_asymmetric(self, ciphertext, private_key):
+        # Implement code to encrypt plaintext using asymmetric encryption
+        cipher = PKCS1_OAEP.new(private_key)
+        plaintext = cipher.decrypt(ciphertext)
+
+        return plaintext.decode()
 
 # class Encryption():
 #     def __init__(self):
