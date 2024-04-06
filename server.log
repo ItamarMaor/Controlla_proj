@@ -10,3 +10,40 @@ INFO:root:2024-04-05 21:44:00 - Teacher: Amit - Target: paul 127.0.0.1 - Command
 INFO:root:2024-04-05 21:44:18 - Teacher: Amit - Target: paul 127.0.0.1 - Command: announce - Data: kkk
 INFO:root:2024-04-05 21:49:16 - Teacher: roy - Target: amit 127.0.0.1 - Command: announce - Data: bye
 INFO:root:2024-04-05 21:49:24 - Teacher: roy - Target: amit 127.0.0.1 - Command: screenshot
+INFO:root:2024-04-05 21:55:22 - Teacher: roy - Target: omri 10.100.102.96 - Command: block
+INFO:root:2024-04-05 21:55:29 - Teacher: roy - Target: omri 10.100.102.96 - Command: unblock
+INFO:root:2024-04-05 21:55:34 - Teacher: roy - Target: omri 10.100.102.96 - Command: screenshot
+INFO:root:2024-04-05 21:55:51 - Teacher: roy - Target: Maddam 127.0.0.1 - Command: announce - Data: good night
+INFO:root:2024-04-05 21:55:51 - Teacher: roy - Target: omri 10.100.102.96 - Command: announce - Data: good night
+INFO:root:2024-04-05 21:56:26 - Teacher: roy - Target: Maddam 127.0.0.1 - Command: block
+INFO:root:2024-04-05 21:56:26 - Teacher: roy - Target: omri 10.100.102.96 - Command: block
+INFO:root:2024-04-05 21:56:32 - Teacher: roy - Target: Maddam 127.0.0.1 - Command: unblock
+INFO:root:2024-04-05 21:56:32 - Teacher: roy - Target: omri 10.100.102.96 - Command: unblock
+INFO:root:2024-04-05 21:56:35 - Teacher: roy - Target: omri 10.100.102.96 - Command: block
+INFO:root:2024-04-05 21:56:38 - Teacher: roy - Target: Maddam 127.0.0.1 - Command: block
+INFO:root:2024-04-05 21:56:38 - Teacher: roy - Target: omri 10.100.102.96 - Command: unblock
+INFO:root:2024-04-05 21:56:39 - Teacher: roy - Target: Maddam 127.0.0.1 - Command: unblock
+INFO:root:2024-04-05 21:56:39 - Teacher: roy - Target: omri 10.100.102.96 - Command: block
+INFO:root:2024-04-05 21:56:40 - Teacher: roy - Target: Maddam 127.0.0.1 - Command: block
+INFO:root:2024-04-05 21:56:40 - Teacher: roy - Target: omri 10.100.102.96 - Command: unblock
+INFO:root:2024-04-05 21:56:41 - Teacher: roy - Target: Maddam 127.0.0.1 - Command: unblock
+INFO:root:2024-04-05 21:56:41 - Teacher: roy - Target: omri 10.100.102.96 - Command: block
+INFO:root:2024-04-05 21:56:42 - Teacher: roy - Target: Maddam 127.0.0.1 - Command: block
+INFO:root:2024-04-05 21:56:42 - Teacher: roy - Target: omri 10.100.102.96 - Command: unblock
+INFO:root:2024-04-05 21:56:44 - Teacher: roy - Target: Maddam 127.0.0.1 - Command: unblock
+INFO:root:2024-04-05 21:56:44 - Teacher: roy - Target: omri 10.100.102.96 - Command: block
+INFO:root:2024-04-05 21:56:46 - Teacher: roy - Target: omri 10.100.102.96 - Command: unblock
+INFO:root:2024-04-05 21:56:51 - Teacher: roy - Target: omri 10.100.102.96 - Command: shutdown
+INFO:root:2024-04-05 22:02:42 - Teacher: amit - Target: mike 127.0.0.1 - Command: announce - Data: play
+INFO:root:2024-04-05 22:09:24 - Teacher:  - Target: aaa 127.0.0.1 - Command: announce - Data: test
+INFO:root:2024-04-05 22:11:11 - Teacher:  - Target: asd 127.0.0.1 - Command: announce - Data: mike
+INFO:root:2024-04-05 22:12:51 - Teacher:  - Target: asd 127.0.0.1 - Command: announce - Data: bye
+INFO:root:2024-04-05 22:14:42 - Teacher:  - Target: aaa 127.0.0.1 - Command: announce - Data: bye
+INFO:root:2024-04-05 22:15:31 - Teacher:  - Target: aaa 127.0.0.1 - Command: announce - Data: awdas
+INFO:root:2024-04-05 22:16:25 - Teacher:  - Target: goodnight 127.0.0.1 - Command: announce - Data: layla tov
+INFO:root:2024-04-05 22:16:32 - Teacher:  - Target: goodnight 127.0.0.1 - Command: shutdown
+INFO:root:2024-04-06 12:58:20 - Teacher: yoav - Target: moshe 127.0.0.1 - Command: announce - Data: doooo
+INFO:root:2024-04-06 12:58:32 - Teacher: yoav - Target: moshe 127.0.0.1 - Command: screenshot
+INFO:root:2024-04-06 12:58:39 - Teacher: yoav - Target: moshe 127.0.0.1 - Command: screenshot
+INFO:root:2024-04-06 12:58:44 - Teacher: yoav - Target: moshe 127.0.0.1 - Command: block
+INFO:root:2024-04-06 12:58:44 - Teacher: yoav - Target: moshe 127.0.0.1 - Command: unblock

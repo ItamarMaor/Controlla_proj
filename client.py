@@ -7,6 +7,7 @@ import pickle
 from client_utils import WindowBlocker, HybridEncryptionClient
 import tkinter as tk
 from tkinter import messagebox
+import wx
 
 commands = {'get_client_username': 0, 'shutdown': 1, 'screenshot': 2, 'block': 3, 'unblock': 4, 'announce': 5}
 
@@ -62,7 +63,11 @@ class Client:
                 self.blocker = WindowBlocker()
             elif cmmd == '5':
                 # Command: announce
-                messagebox.showinfo("Announcement", data) 
+                app = wx.App()
+                dlg = wx.MessageDialog(None, data, 'Announcement', wx.OK | wx.ICON_INFORMATION)
+                dlg.ShowModal()
+                dlg.Destroy()
+                app.MainLoop()
     
     def shutdown_computer(self):
         self.client_socket.close()

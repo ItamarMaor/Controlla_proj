@@ -45,10 +45,8 @@ class Gui:
             password = hashlib.sha256(password_entry.get().encode()).hexdigest()
             if not self.database.check_user(uname, password):
                 self.database.insert_user(uname, password)
-                # messagebox.showinfo("good", 'good job')
-                self.username = uname
-                login_window.destroy()
-                self.admin_window()
+                messagebox.showinfo("Signed Up Successfully", 'Log in now!')
+
 
         greeting = tk.Label(
             login_window,
