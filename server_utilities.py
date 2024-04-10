@@ -96,7 +96,7 @@ class Database:
         cursor.execute('DELETE FROM students WHERE name = ?', (name,))
         conn.close()
 
-class ServerFunctions():    
+class ServerFunctions():
     def show_screenshot(self, data):
         '''this function translates the photo from byte back to png and shows it'''
         decompressed_data = gzip.decompress(data)
@@ -122,18 +122,17 @@ class ServerFunctions():
         
         return announcment_msg
     
-    def recv_uname(self, conn_client_socket):
-        print("Asking for username")
+    def recv_uname(self, conn_client_socket, public_key):
         while True:
             # Check if the client socket is ready for receiving data
             rlist, _, _ = select.select([conn_client_socket], [], [], 60)
             if conn_client_socket in rlist:
-                cmmd = conn_client_socket.recv(1).decode('utf-8')
-                client_username_len = int(conn_client_socket.recv(8).decode('utf-8'))
-                client_username = conn_client_socket.recv(client_username_len)
-                client_username = client_username.decode('utf-8')
+                self.encryption = HybridEncryptionServer()
+                len = conn_client_socket.recv(8).decode('utf-8')
+                data = conn_client_socket.recv(int(len))
+                _, client_username = self.encryption.decrypt(data, public_key)
                 break
-        return client_username   
+        return client_username.decode('utf-8') 
     
 class HybridEncryptionServer():
     def __init__(self):

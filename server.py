@@ -36,12 +36,15 @@ class Server(Thread):
     def run(self):
         while True:
             client_socket, (ip, port) = self.server_socket.accept()
-            client_username = self.utils.recv_uname(client_socket)
-            print(f"\nAccepted connection from user: {client_username} - {ip, port}")
-            client_thread = ClientThread(ip, port, client_socket, client_username, self.username)
+            client_thread = ClientThread(ip, port, client_socket, self.username)
             client_thread.start()
             self.client_threads.append(client_thread)
             self.refresh = True
+            
+    def close(self):
+        for client_thread in self.client_threads:
+            client_thread.client_socket.close()
+        self.server_socket.close()
             
     def client_exit(self, client_socket, client_address):
         del self.clients[client_address]
@@ -69,6 +72,8 @@ class Server(Thread):
         connected_list = []
         
         for client_thread in self.client_threads:
+            while client_thread.username == None:
+                pass
             connected_list.append((client_thread.ip, client_thread.username))
             
         return connected_list
@@ -91,7 +96,7 @@ class Server(Thread):
             return 'No logs found for this teacher'
 
 class ClientThread(Thread): 
-    def __init__(self, ip, port, client_socket, username, teacher): 
+    def __init__(self, ip, port, client_socket, teacher): 
         Thread.__init__(self) 
         self.utils = ServerFunctions()
         self.ip = ip 
@@ -99,7 +104,7 @@ class ClientThread(Thread):
         self.client_socket = client_socket
         self.encryption = HybridEncryptionServer()
         self.symetric_key = self.encryption.generate_symetric_key() #new
-        self.username = username
+        self.username = None
         self.teacher = teacher
         self.messages = []
         self.is_blocked = False
@@ -109,6 +114,9 @@ class ClientThread(Thread):
     def run(self): 
         self.encryption.key = self.encryption.import_public_key(self.client_socket.recv(1024))
         self.client_socket.sendall(self.encryption.encrypt_asymmetric(self.symetric_key, self.encryption.key))
+        
+        self.username = self.utils.recv_uname(self.client_socket, self.symetric_key)
+        print(f"\nAccepted connection from user: {self.username} - {self.ip, self.port}")
         
         while True: 
             self.send_messages()

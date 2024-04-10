@@ -47,3 +47,29 @@ INFO:root:2024-04-06 12:58:32 - Teacher: yoav - Target: moshe 127.0.0.1 - Comman
 INFO:root:2024-04-06 12:58:39 - Teacher: yoav - Target: moshe 127.0.0.1 - Command: screenshot
 INFO:root:2024-04-06 12:58:44 - Teacher: yoav - Target: moshe 127.0.0.1 - Command: block
 INFO:root:2024-04-06 12:58:44 - Teacher: yoav - Target: moshe 127.0.0.1 - Command: unblock
+INFO:root:2024-04-10 12:02:26 - Teacher: ItamarMaor - Target: amit 127.0.0.1 - Command: screenshot
+INFO:root:2024-04-10 12:02:43 - Teacher: ItamarMaor - Target: amit 127.0.0.1 - Command: announce - Data: hi lesson is over
+INFO:root:2024-04-10 12:03:10 - Teacher: ItamarMaor - Target: amit 127.0.0.1 - Command: block
+INFO:root:2024-04-10 12:03:21 - Teacher: ItamarMaor - Target: amit 127.0.0.1 - Command: unblock
+INFO:root:2024-04-10 12:20:44 - Teacher:  - Target: babe 127.0.0.1 - Command: block
+INFO:root:2024-04-10 12:20:44 - Teacher:  - Target: babe 127.0.0.1 - Command: unblock
+INFO:root:2024-04-10 12:20:56 - Teacher:  - Target: babe 127.0.0.1 - Command: announce - Data: blob
+INFO:root:2024-04-10 12:34:27 - Teacher:  - Target: make 127.0.0.1 - Command: screenshot
+INFO:root:2024-04-10 12:48:02 - Teacher:  - Target: mmm 127.0.0.1 - Command: screenshot
+INFO:root:2024-04-10 12:48:29 - Teacher:  - Target:  127.0.0.1 - Command: screenshot
+INFO:root:2024-04-10 13:03:41 - Teacher:  - Target: aaa 127.0.0.1 - Command: block
+INFO:root:2024-04-10 13:03:50 - Teacher:  - Target: aaa 127.0.0.1 - Command: unblock
+INFO:root:2024-04-10 13:39:20 - Teacher:  - Target: awdasd 127.0.0.1 - Command: screenshot
+INFO:root:2024-04-10 13:39:29 - Teacher:  - Target: awdasd 127.0.0.1 - Command: announce - Data: adwsd
+INFO:root:2024-04-10 15:38:44 - Teacher:  - Target: fff 127.0.0.1 - Command: block
+INFO:root:2024-04-10 15:38:54 - Teacher:  - Target: fff 127.0.0.1 - Command: unblock
+INFO:root:2024-04-10 15:39:13 - Teacher:  - Target: eeee 127.0.0.1 - Command: announce - Data: sss
+INFO:root:2024-04-10 15:39:20 - Teacher:  - Target: fff 127.0.0.1 - Command: screenshot
+INFO:root:2024-04-10 15:40:17 - Teacher:  - Target:  127.0.0.1 - Command: screenshot
+INFO:root:2024-04-10 15:40:44 - Teacher:  - Target: ggggg 127.0.0.1 - Command: screenshot
+INFO:root:2024-04-10 15:40:55 - Teacher:  - Target: ggggg 127.0.0.1 - Command: block
+INFO:root:2024-04-10 15:40:56 - Teacher:  - Target: ggggg 127.0.0.1 - Command: unblock
+INFO:root:2024-04-10 15:41:05 - Teacher:  - Target: ggggg 127.0.0.1 - Command: announce - Data: hh
+INFO:root:2024-04-10 15:46:25 - Teacher:  - Target: ggggg 127.0.0.1 - Command: block
+INFO:root:2024-04-10 15:46:26 - Teacher:  - Target: ggggg 127.0.0.1 - Command: unblock
+INFO:root:2024-04-10 15:46:27 - Teacher:  - Target: ggggg 127.0.0.1 - Command: screenshot

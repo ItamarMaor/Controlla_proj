@@ -6,8 +6,8 @@ import gzip
 import pickle
 from client_utils import WindowBlocker, HybridEncryptionClient
 import tkinter as tk
-from tkinter import messagebox
 import wx
+import time
 
 commands = {'get_client_username': 0, 'shutdown': 1, 'screenshot': 2, 'block': 3, 'unblock': 4, 'announce': 5}
 
@@ -24,13 +24,18 @@ class Client:
         self.client_socket.connect((self.server_address, self.server_port))
         print("Connected to the server.")
         
-        client_username = self.ask_for_username()
-        self.client_socket.sendall(f"{commands['get_client_username']}{str(len(client_username)).zfill(8)}".encode('utf-8'))
-        self.client_socket.sendall(client_username.encode('utf-8'))
-        
+        # Send the client's public key to the server
         self.client_socket.sendall(self.encryption.export_public_key())
+
+        # Receive the symmetric key from the server and decrypt it using the client's private key
         self.encryption.symetric_key = self.encryption.decrypt_asymmetric(self.client_socket.recv(1024), self.encryption.private_key)
-    
+        
+        client_username = self.ask_for_username()
+        msg = self.format_message(commands['get_client_username'], client_username)
+                
+        self.client_socket.send(f"{str(len(msg)).zfill(8)}".encode('utf-8'))
+        self.client_socket.sendall(msg)
+        
     def receive_messages(self):
         recv_len = self.client_socket.recv(8).decode('utf-8')
         ciphertext = self.client_socket.recv(int(recv_len))
@@ -132,11 +137,25 @@ class Client:
         root.mainloop()    
         
         return uname
+    
+    
+def start(server_address, server_port):
+    while True:
+        try:
+            a = Client(server_address, server_port)
+            a.run()
+        except:
+            a.client_socket.close()
+            time.sleep(10)
 
 
 if __name__ == "__main__":
     server_address = "127.0.0.1"  # Change this to the server's IP address
     server_port = 5000  # Change this to the server's port
 
-    client = Client(server_address, server_port)
-    client.run()
+    while True:
+        try:
+            a = Client(server_address, server_port)
+            a.run()
+        except:
+            a.client_socket.close()

@@ -5,6 +5,7 @@ from server_utilities import Database
 from server_utilities import ServerFunctions
 from server import Server
 import hashlib
+import threading
 
 palette = {
     'background_color': '#b2b2b2',
@@ -32,12 +33,12 @@ class Gui:
             uname = username_entry.get()
             password = hashlib.sha256(password_entry.get().encode()).hexdigest()
             if self.database.check_user(uname, password):
-                # messagebox.showinfo("good", 'good job')
                 self.username = uname
                 login_window.destroy()
-                self.server = Server('0.0.0.0',5000)
-                self.server.start()
-                self.server.username = uname
+                if self.server == '':
+                    self.server = Server('0.0.0.0',5000)
+                    self.server.start()
+                    self.server.username = uname
                 self.admin_window()
 
         def signup_button_function():
@@ -231,13 +232,23 @@ class Gui:
                 switch_block_button_text(client_thread)
             else:
                 selected_index = None
+                
+        def logout():
+            admin_root.destroy()
+            self.login()          
+        
+        def close():
+            admin_root.destroy()
+            self.server.close() 
         
         admin_root = tk.Tk()
         admin_root.geometry('700x500')
         admin_root.title("Admin Controlla")
 
         self.listbox = tk.Listbox(admin_root)
+        self.WM_DELETE_WINDOW = admin_root.protocol("WM_DELETE_WINDOW", close)
         self.listbox.bind('<<ListboxSelect>>', on_select)
+        logout_frame = tk.Frame(admin_root)
         button_frame = tk.Frame(admin_root)  # Create a frame to hold the buttons
         
         welcome_label = tk.Label(
@@ -301,7 +312,7 @@ class Gui:
             variable=all_checkbox_var
         )
         show_log_button = tk.Button(
-            admin_root,
+            logout_frame,
             text='Show Log',
             font=("Garamond", 14),
             border=0,  # Remove the border
@@ -310,9 +321,21 @@ class Gui:
             fg=palette['text_color'],
             command=lambda: self.show_log()
         )
+        log_out_button = tk.Button(
+            logout_frame,
+            text='Log Out',
+            font=("Garamond", 14),
+            border=0,  # Remove the border
+            width=21,
+            bg=palette['button_color'],
+            fg=palette['text_color'],
+            command=lambda: logout()
+        )
         
         welcome_label.pack(side=tk.TOP)
-        show_log_button.pack(side=tk.TOP)
+        logout_frame.pack(side=tk.TOP, padx=2, pady=2)
+        show_log_button.pack(side=tk.LEFT, padx=2, pady=2)
+        log_out_button.pack(side=tk.LEFT, padx=2, pady=2)
         self.listbox.pack(side=tk.LEFT, expand=True, padx=2, pady=2)
         button_frame.pack(side=tk.RIGHT, expand=True, padx=2)  # Pack the button frame to the left with some padding
         shutdown_button.pack(side=tk.TOP, pady=2)
@@ -359,8 +382,8 @@ class Gui:
     def reresh_listbox(self):
         self.listbox.delete(0, tk.END)
         connected_clients = self.server.get_connected_clients()
-        for client in connected_clients:
-            self.listbox.insert(tk.END, f"{client[0]} {client[1]}")
+        for ip, name in connected_clients:
+            self.listbox.insert(tk.END, f"{ip} {name}")
 
     def open_main_screen(self):
         
