@@ -73,3 +73,8 @@ INFO:root:2024-04-10 15:41:05 - Teacher:  - Target: ggggg 127.0.0.1 - Command: a
 INFO:root:2024-04-10 15:46:25 - Teacher:  - Target: ggggg 127.0.0.1 - Command: block
 INFO:root:2024-04-10 15:46:26 - Teacher:  - Target: ggggg 127.0.0.1 - Command: unblock
 INFO:root:2024-04-10 15:46:27 - Teacher:  - Target: ggggg 127.0.0.1 - Command: screenshot
+INFO:root:2024-04-10 18:06:45 - Teacher:  - Target: ggggg 127.0.0.1 - Command: announce - Data: eee
+INFO:root:2024-04-10 23:32:35 - Teacher: amit - Target: omri 127.0.0.1 - Command: screenshot
+INFO:root:2024-04-10 23:33:28 - Teacher: amit - Target: omri 127.0.0.1 - Command: block
+INFO:root:2024-04-10 23:33:32 - Teacher: amit - Target: omri 127.0.0.1 - Command: unblock
+INFO:root:2024-04-10 23:34:23 - Teacher: amit - Target: omri 127.0.0.1 - Command: announce - Data: hello

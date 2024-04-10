@@ -39,7 +39,7 @@ class Gui:
                     self.server = Server('0.0.0.0',5000)
                     self.server.start()
                     self.server.username = uname
-                self.admin_window()
+                self.admin_window_start_thread()
 
         def signup_button_function():
             uname = username_entry.get()
@@ -133,10 +133,26 @@ class Gui:
         logo.place(relx=0.5, rely=0.9, anchor='center')
 
         login_window.mainloop()
+        
+    def admin_window_start_thread(self):
+        threading.Thread(target=self.admin_window).start()
 
     def admin_window(self):
-        '''takes information about the blocked sites from the hosts file on server, formats it and shows it nicely -
-        allows to add/remove sites from the list'''
+        """
+        Creates and displays the admin window GUI.
+
+        This method sets up the admin window GUI with various buttons and functionality.
+        It handles button clicks, updates the list of client threads, and provides options
+        to perform actions such as shutdown, take screenshots, block/unblock clients, and
+        send announcements.
+
+        Parameters:
+        - self: The instance of the class.
+
+        Returns:
+        - None
+        """
+    
         def on_click(button_name):
             cmmd = commands[button_name]
             print(button_name,cmmd)
