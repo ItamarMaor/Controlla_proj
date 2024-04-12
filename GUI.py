@@ -23,7 +23,10 @@ class Gui:
         self.username = ''
         self.listbox = ''
         self.failed_login = False
+<<<<<<< HEAD
         self.sign_up_success = False
+=======
+>>>>>>> d4b0d88ec70b3f4e6221892bafbd77c73b2feafd
 
     def login(self):
         login_window = tk.Tk()
@@ -43,10 +46,22 @@ class Gui:
                     self.server.username = uname
                 self.admin_window()
             else:
+<<<<<<< HEAD
                 if self.sign_up_success:
                     sign_up_success_label.place_forget()
                 login_failed()
 
+=======
+                login_failed()
+
+        log_in_fail_label = tk.Label(
+            login_window,
+            text="user or password is incorrect",
+            font=("Garamond", 20),
+            fg=palette['text_color'],
+            bg=palette['background_color']
+        )
+>>>>>>> d4b0d88ec70b3f4e6221892bafbd77c73b2feafd
 
         def signup_button_function():
             if self.failed_login:
@@ -55,15 +70,22 @@ class Gui:
             password = hashlib.sha256(password_entry.get().encode()).hexdigest()
             if not self.database.check_user(uname, password):
                 self.database.insert_user(uname, password)
+<<<<<<< HEAD
                 sign_up_success()
                 # messagebox.showinfo("Signed Up Successfully", 'Log in now!')
             else: 
                 sign_up_fail()
                 # messagebox.showinfo("User already exists", 'Please log in!')
+=======
+                messagebox.showinfo("Signed Up Successfully", 'Log in now!')
+            else: 
+                messagebox.showinfo("User already exists", 'Please log in!')
+>>>>>>> d4b0d88ec70b3f4e6221892bafbd77c73b2feafd
             
         
         def login_failed():
             log_in_fail_label.place(relx=0.53, rely=0.47, anchor='center')
+<<<<<<< HEAD
             self.failed_login = True
         
         def sign_up_success():
@@ -71,6 +93,9 @@ class Gui:
         def sign_up_fail():
             sign_up_fail_label.place(relx=0.53, rely=0.8, anchor='center')
         
+=======
+            
+>>>>>>> d4b0d88ec70b3f4e6221892bafbd77c73b2feafd
 
 
         greeting = tk.Label(

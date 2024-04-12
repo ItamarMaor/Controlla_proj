@@ -96,4 +96,7 @@ INFO:root:2024-04-11 11:51:11 - Teacher:  - Target: itamar 127.0.0.1 - Command: 
 INFO:root:2024-04-11 11:51:11 - Teacher:  - Target: omri 127.0.0.1 - Command: unblock
 INFO:root:2024-04-11 11:51:15 - Teacher:  - Target: itamar 127.0.0.1 - Command: block
 INFO:root:2024-04-11 11:51:17 - Teacher:  - Target: itamar 127.0.0.1 - Command: unblock
+<<<<<<< HEAD
 INFO:root:2024-04-12 13:09:36 - Teacher:  - Target: hhhh 127.0.0.1 - Command: screenshot
+=======
+>>>>>>> d4b0d88ec70b3f4e6221892bafbd77c73b2feafd
