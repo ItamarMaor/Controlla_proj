@@ -6,6 +6,7 @@ from server_utilities import ServerFunctions
 from server import Server
 import hashlib
 import threading
+import re
 
 palette = {
     'background_color': '#b2b2b2',
@@ -23,10 +24,8 @@ class Gui:
         self.username = ''
         self.listbox = ''
         self.failed_login = False
-<<<<<<< HEAD
         self.sign_up_success = False
-=======
->>>>>>> d4b0d88ec70b3f4e6221892bafbd77c73b2feafd
+        self.is_showing_unvalid_password_msg = False
 
     def login(self):
         login_window = tk.Tk()
@@ -46,56 +45,88 @@ class Gui:
                     self.server.username = uname
                 self.admin_window()
             else:
-<<<<<<< HEAD
                 if self.sign_up_success:
                     sign_up_success_label.place_forget()
                 login_failed()
 
-=======
-                login_failed()
-
-        log_in_fail_label = tk.Label(
-            login_window,
-            text="user or password is incorrect",
-            font=("Garamond", 20),
-            fg=palette['text_color'],
-            bg=palette['background_color']
-        )
->>>>>>> d4b0d88ec70b3f4e6221892bafbd77c73b2feafd
 
         def signup_button_function():
+            if self.is_showing_unvalid_password_msg:
+                is_valid_password_label("get off screen")
+            sign_up_fail_label.place_forget()
             if self.failed_login:
                 log_in_fail_label.place_forget()
             uname = username_entry.get()
             password = hashlib.sha256(password_entry.get().encode()).hexdigest()
-            if not self.database.check_user(uname, password):
-                self.database.insert_user(uname, password)
-<<<<<<< HEAD
-                sign_up_success()
-                # messagebox.showinfo("Signed Up Successfully", 'Log in now!')
-            else: 
-                sign_up_fail()
-                # messagebox.showinfo("User already exists", 'Please log in!')
-=======
-                messagebox.showinfo("Signed Up Successfully", 'Log in now!')
-            else: 
-                messagebox.showinfo("User already exists", 'Please log in!')
->>>>>>> d4b0d88ec70b3f4e6221892bafbd77c73b2feafd
+            if check_password_strength():
+                if not self.database.check_user(uname, password):
+                    self.database.insert_user(uname, password)
+                    sign_up_success()
+                    # messagebox.showinfo("Signed Up Successfully", 'Log in now!')
+                else: 
+                    sign_up_fail()
+                    # messagebox.showinfo("User already exists", 'Please log in!')
             
         
         def login_failed():
             log_in_fail_label.place(relx=0.53, rely=0.47, anchor='center')
-<<<<<<< HEAD
             self.failed_login = True
         
         def sign_up_success():
             sign_up_success_label.place(relx=0.53, rely=0.8, anchor='center')
+            self.sign_up_success = True
+            
         def sign_up_fail():
             sign_up_fail_label.place(relx=0.53, rely=0.8, anchor='center')
-        
-=======
             
->>>>>>> d4b0d88ec70b3f4e6221892bafbd77c73b2feafd
+        def check_password_strength():
+            password = password_entry.get()
+            conditions_of_validness = ""
+            is_valid_password = False
+             
+            # Check conditions for a valid password:
+            # Password length should be between 6 and 12 characters
+            if (len(password) < 6 or len(password) > 15):
+                conditions_of_validness += "length should be 6-15 chars\n"
+            # Password should contain at least one lowercase letter
+            if not re.search("[a-z]", password):
+                conditions_of_validness += "At least one lowercase letter\n"
+            # Password should contain at least one digit
+            if not re.search("[0-9]", password):
+                conditions_of_validness += "At least one digit\n"
+            # Password should contain at least one uppercase letter
+            if not re.search("[A-Z]", password):
+                conditions_of_validness += "At least one uppercase letter\n"
+            # Password should contain at least one special character among '$', '#', '@'
+            if not re.search("[$#@]", password):
+                conditions_of_validness += "At least one special char\n"
+            # Password should not contain any whitespace character
+            if re.search("\s", password):
+                conditions_of_validness += "No whitespace\n"
+            elif conditions_of_validness == "":
+                conditions_of_validness = "Password is strong"
+                is_valid_password = True
+            print(conditions_of_validness)
+            print(is_valid_password)
+            is_valid_password_label(conditions_of_validness)
+            return is_valid_password
+            
+            
+        def is_valid_password_label(problem_type):
+            unvalid_password = tk.Label(
+                login_window,
+                text= problem_type,
+                font=("Garamond", 12),
+                fg=palette['text_color'],
+                bg=palette['background_color']
+            )
+            if problem_type != "get off screen":
+                unvalid_password.place(relx=0.21, rely=0.56, anchor='center')
+                self.is_showing_unvalid_password_msg = True
+            else:
+                unvalid_password.place_forget()
+                self.is_showing_unvalid_password_msg = False
+                    
 
 
         greeting = tk.Label(
@@ -105,14 +136,6 @@ class Gui:
             fg=palette['text_color'],
             bg=palette['background_color']
         )
-        # log_in_fail_label = tk.Label(
-        #     login_window,
-        #     text="user or password is incorrect",
-        #     font=("Garamond", 20),
-        #     fg=palette['text_color'],
-        #     bg=palette['background_color']
-        # )
-        # log_in_fail_label.place(relx=0.53, rely=0.45, anchor='center')
         log_in_button = tk.Button(
             login_window,
             text="Press to Log In!",
@@ -190,6 +213,7 @@ class Gui:
             fg=palette['text_color'],
             bg=palette['background_color']
         )
+        
 
         
 
