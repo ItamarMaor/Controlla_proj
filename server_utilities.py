@@ -48,6 +48,16 @@ class Database:
         # delete data
         cursor.execute('DELETE FROM users WHERE username = ?', (username,))
         conn.close()
+        
+    def check_username_exists(self, username):
+        self.create_user_table()
+        conn, cursor = self.create_conn()
+        # check if username exists
+        cursor.execute('SELECT * FROM users WHERE username = ?', (username,))
+        username_exists = cursor.fetchone() is not None
+        conn.close()
+        
+        return username_exists
     
     def check_user(self, username, password):
         self.create_user_table()

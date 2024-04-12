@@ -25,7 +25,7 @@ class Gui:
         self.listbox = ''
         self.failed_login = False
         self.sign_up_success = False
-        self.is_showing_unvalid_password_msg = False
+        self.is_valid_password = False
 
     def login(self):
         login_window = tk.Tk()
@@ -45,26 +45,28 @@ class Gui:
                     self.server.username = uname
                 self.admin_window()
             else:
+                unvalid_password.place_forget()
                 if self.sign_up_success:
                     sign_up_success_label.place_forget()
                 login_failed()
 
-
         def signup_button_function():
-            if self.is_showing_unvalid_password_msg:
-                is_valid_password_label("get off screen")
             sign_up_fail_label.place_forget()
             if self.failed_login:
                 log_in_fail_label.place_forget()
             uname = username_entry.get()
             password = hashlib.sha256(password_entry.get().encode()).hexdigest()
-            if check_password_strength():
-                if not self.database.check_user(uname, password):
+            if self.database.check_username_exists(uname):
+                sign_up_fail()
+                return
+            unvalid_password.config(text=check_password_strength(password_entry.get()))
+            # unvalid_username.config(text=check_uname_strength(uname))
+            show_is_valid_password_label()
+            password_strength = unvalid_password.cget("text")
+            if password_strength == "Password is strong":  # Check if password is strong
                     self.database.insert_user(uname, password)
                     sign_up_success()
                     # messagebox.showinfo("Signed Up Successfully", 'Log in now!')
-                else: 
-                    sign_up_fail()
                     # messagebox.showinfo("User already exists", 'Please log in!')
             
         
@@ -79,11 +81,10 @@ class Gui:
         def sign_up_fail():
             sign_up_fail_label.place(relx=0.53, rely=0.8, anchor='center')
             
-        def check_password_strength():
+        def check_password_strength(password):
             password = password_entry.get()
             conditions_of_validness = ""
-            is_valid_password = False
-             
+            self.is_valid_password = False
             # Check conditions for a valid password:
             # Password length should be between 6 and 12 characters
             if (len(password) < 6 or len(password) > 15):
@@ -105,30 +106,36 @@ class Gui:
                 conditions_of_validness += "No whitespace\n"
             elif conditions_of_validness == "":
                 conditions_of_validness = "Password is strong"
-                is_valid_password = True
+                self.is_valid_password = True
             print(conditions_of_validness)
-            print(is_valid_password)
-            is_valid_password_label(conditions_of_validness)
-            return is_valid_password
+            print(self.is_valid_password)
+            # is_valid_password_label(conditions_of_validness)
+            return conditions_of_validness
             
             
-        def is_valid_password_label(problem_type):
-            unvalid_password = tk.Label(
-                login_window,
-                text= problem_type,
-                font=("Garamond", 12),
-                fg=palette['text_color'],
-                bg=palette['background_color']
-            )
-            if problem_type != "get off screen":
-                unvalid_password.place(relx=0.21, rely=0.56, anchor='center')
-                self.is_showing_unvalid_password_msg = True
-            else:
-                unvalid_password.place_forget()
-                self.is_showing_unvalid_password_msg = False
+        def show_is_valid_password_label():
+            # if self.is_valid_password == False:
+            unvalid_password.place(relx=0.21, rely=0.56, anchor='center')
+                # self.is_showing_unvalid_password_msg = True
+            # else:
+            #     unvalid_password.place_forget()
+            #     self.is_showing_unvalid_password_msg = False
                     
-
-
+    
+        unvalid_password = tk.Label(
+            login_window,
+            text= "",
+            font=("Garamond", 12),
+            fg=palette['text_color'],
+            bg=palette['background_color']
+        )
+        unvalid_username = tk.Label(
+            login_window,
+            text= "",
+            font=("Garamond", 12),
+            fg=palette['text_color'],
+            bg=palette['background_color']
+        )
         greeting = tk.Label(
             login_window,
             text="Hello Mr/s. Teacher",
@@ -213,7 +220,13 @@ class Gui:
             fg=palette['text_color'],
             bg=palette['background_color']
         )
-        
+        # unvalid_password = tk.Label(
+        #     login_window,
+        #     text= is_valid_password_label(),
+        #     font=("Garamond", 12),
+        #     fg=palette['text_color'],
+        #     bg=palette['background_color']
+        # )
 
         
 
