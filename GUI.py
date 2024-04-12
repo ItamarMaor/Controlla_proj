@@ -23,6 +23,7 @@ class Gui:
         self.username = ''
         self.listbox = ''
         self.failed_login = False
+        self.sign_up_success = False
 
     def login(self):
         login_window = tk.Tk()
@@ -42,15 +43,10 @@ class Gui:
                     self.server.username = uname
                 self.admin_window()
             else:
+                if self.sign_up_success:
+                    sign_up_success_label.place_forget()
                 login_failed()
 
-        log_in_fail_label = tk.Label(
-            login_window,
-            text="user or password is incorrect",
-            font=("Garamond", 20),
-            fg=palette['text_color'],
-            bg=palette['background_color']
-        )
 
         def signup_button_function():
             if self.failed_login:
@@ -59,14 +55,22 @@ class Gui:
             password = hashlib.sha256(password_entry.get().encode()).hexdigest()
             if not self.database.check_user(uname, password):
                 self.database.insert_user(uname, password)
-                messagebox.showinfo("Signed Up Successfully", 'Log in now!')
+                sign_up_success()
+                # messagebox.showinfo("Signed Up Successfully", 'Log in now!')
             else: 
-                messagebox.showinfo("User already exists", 'Please log in!')
+                sign_up_fail()
+                # messagebox.showinfo("User already exists", 'Please log in!')
             
         
         def login_failed():
             log_in_fail_label.place(relx=0.53, rely=0.47, anchor='center')
-            
+            self.failed_login = True
+        
+        def sign_up_success():
+            sign_up_success_label.place(relx=0.53, rely=0.8, anchor='center')
+        def sign_up_fail():
+            sign_up_fail_label.place(relx=0.53, rely=0.8, anchor='center')
+        
 
 
         greeting = tk.Label(
@@ -140,6 +144,28 @@ class Gui:
             bg=palette['background_color'],
             fg=palette['text_color']
         )
+        log_in_fail_label = tk.Label(
+            login_window,
+            text="user or password is incorrect",
+            font=("Garamond", 20),
+            fg=palette['text_color'],
+            bg=palette['background_color']
+        )
+        sign_up_success_label = tk.Label(
+            login_window,
+            text="Signed Up Successfully",
+            font=("Garamond", 20),
+            fg=palette['text_color'],
+            bg=palette['background_color']
+        )
+        sign_up_fail_label = tk.Label(
+            login_window,
+            text="user already exists",
+            font=("Garamond", 20),
+            fg=palette['text_color'],
+            bg=palette['background_color']
+        )
+
         
 
             
