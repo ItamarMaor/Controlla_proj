@@ -78,3 +78,21 @@ INFO:root:2024-04-10 23:32:35 - Teacher: amit - Target: omri 127.0.0.1 - Command
 INFO:root:2024-04-10 23:33:28 - Teacher: amit - Target: omri 127.0.0.1 - Command: block
 INFO:root:2024-04-10 23:33:32 - Teacher: amit - Target: omri 127.0.0.1 - Command: unblock
 INFO:root:2024-04-10 23:34:23 - Teacher: amit - Target: omri 127.0.0.1 - Command: announce - Data: hello
+INFO:root:2024-04-11 10:28:53 - Teacher:  - Target: sss 127.0.0.1 - Command: screenshot
+INFO:root:2024-04-11 11:46:13 - Teacher:  - Target: omri 127.0.0.1 - Command: screenshot
+INFO:root:2024-04-11 11:48:07 - Teacher:  - Target: itamar 127.0.0.1 - Command: announce - Data: lesson is over
+INFO:root:2024-04-11 11:48:07 - Teacher:  - Target: omri 127.0.0.1 - Command: announce - Data: lesson is over
+INFO:root:2024-04-11 11:49:40 - Teacher:  - Target: itamar 127.0.0.1 - Command: block
+INFO:root:2024-04-11 11:49:40 - Teacher:  - Target: omri 127.0.0.1 - Command: block
+INFO:root:2024-04-11 11:49:47 - Teacher:  - Target: itamar 127.0.0.1 - Command: unblock
+INFO:root:2024-04-11 11:49:47 - Teacher:  - Target: omri 127.0.0.1 - Command: unblock
+INFO:root:2024-04-11 11:50:31 - Teacher:  - Target: itamar 127.0.0.1 - Command: block
+INFO:root:2024-04-11 11:50:31 - Teacher:  - Target: omri 127.0.0.1 - Command: block
+INFO:root:2024-04-11 11:50:46 - Teacher:  - Target: itamar 127.0.0.1 - Command: unblock
+INFO:root:2024-04-11 11:50:46 - Teacher:  - Target: omri 127.0.0.1 - Command: unblock
+INFO:root:2024-04-11 11:51:04 - Teacher:  - Target: itamar 127.0.0.1 - Command: block
+INFO:root:2024-04-11 11:51:04 - Teacher:  - Target: omri 127.0.0.1 - Command: block
+INFO:root:2024-04-11 11:51:11 - Teacher:  - Target: itamar 127.0.0.1 - Command: unblock
+INFO:root:2024-04-11 11:51:11 - Teacher:  - Target: omri 127.0.0.1 - Command: unblock
+INFO:root:2024-04-11 11:51:15 - Teacher:  - Target: itamar 127.0.0.1 - Command: block
+INFO:root:2024-04-11 11:51:17 - Teacher:  - Target: itamar 127.0.0.1 - Command: unblock

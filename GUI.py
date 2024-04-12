@@ -22,6 +22,7 @@ class Gui:
         self.server_functions = ServerFunctions()
         self.username = ''
         self.listbox = ''
+        self.failed_login = False
 
     def login(self):
         login_window = tk.Tk()
@@ -37,16 +38,35 @@ class Gui:
                 login_window.destroy()
                 if self.server == '':
                     self.server = Server('0.0.0.0',5000)
-                    self.server.start()
+                    threading.Thread(target=self.server.start).start()  # Start the server on a separate thread
                     self.server.username = uname
-                self.admin_window_start_thread()
+                self.admin_window()
+            else:
+                login_failed()
+
+        log_in_fail_label = tk.Label(
+            login_window,
+            text="user or password is incorrect",
+            font=("Garamond", 20),
+            fg=palette['text_color'],
+            bg=palette['background_color']
+        )
 
         def signup_button_function():
+            if self.failed_login:
+                log_in_fail_label.place_forget()
             uname = username_entry.get()
             password = hashlib.sha256(password_entry.get().encode()).hexdigest()
             if not self.database.check_user(uname, password):
                 self.database.insert_user(uname, password)
                 messagebox.showinfo("Signed Up Successfully", 'Log in now!')
+            else: 
+                messagebox.showinfo("User already exists", 'Please log in!')
+            
+        
+        def login_failed():
+            log_in_fail_label.place(relx=0.53, rely=0.47, anchor='center')
+            
 
 
         greeting = tk.Label(
@@ -56,13 +76,14 @@ class Gui:
             fg=palette['text_color'],
             bg=palette['background_color']
         )
-        log_in_label = tk.Label(
-            login_window,
-            text="Log In:",
-            font=("Garamond", 20),
-            fg=palette['text_color'],
-            bg=palette['background_color']
-        )
+        # log_in_fail_label = tk.Label(
+        #     login_window,
+        #     text="user or password is incorrect",
+        #     font=("Garamond", 20),
+        #     fg=palette['text_color'],
+        #     bg=palette['background_color']
+        # )
+        # log_in_fail_label.place(relx=0.53, rely=0.45, anchor='center')
         log_in_button = tk.Button(
             login_window,
             text="Press to Log In!",
@@ -123,7 +144,7 @@ class Gui:
 
             
         greeting.place(relx=0.5, rely=0.1, anchor='center')
-        # log_in_label.place(relx=0.25, rely=0.29, anchor='e')
+        # log_in_fail_label.place(relx=0.53, rely=0.45, anchor='center')
         log_in_button.place(relx=0.5, rely=0.6, anchor='center')
         sign_up_button.place(relx=0.5, rely=0.7, anchor='center')
         username_entry.place(relx=0.31, rely=0.35, anchor='w')
@@ -134,9 +155,6 @@ class Gui:
 
         login_window.mainloop()
         
-    def admin_window_start_thread(self):
-        threading.Thread(target=self.admin_window).start()
-
     def admin_window(self):
         """
         Creates and displays the admin window GUI.

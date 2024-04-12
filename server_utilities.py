@@ -19,14 +19,6 @@ class Database:
         '''creates connection to the database'''
         conn = sqlite3.connect(self.database)
         return (conn ,conn.cursor())
-    
-    # def generic_func_temp(self):
-    #     conn, cursor = self.create_conn()
-        
-    #     code here
-        
-    #     conn.commit()
-    #     conn.close()
         
     def create_user_table(self):
         conn, cursor = self.create_conn()
