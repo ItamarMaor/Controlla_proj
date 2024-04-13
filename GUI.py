@@ -47,7 +47,7 @@ class Gui:
                     self.server = Server('0.0.0.0',5000)
                     threading.Thread(target=self.server.start).start()  # Start the server on a separate thread
                     self.server.username = uname
-                    self.server.lesson_start_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                self.server.lesson_start_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 self.admin_window()
             else:
                 unvalid_password.place_forget()
@@ -242,19 +242,11 @@ class Gui:
             fg=palette['text_color'],
             bg=palette['background_color']
         )
-        # unvalid_password = tk.Label(
-        #     login_window,
-        #     text= is_valid_password_label(),
-        #     font=("Garamond", 12),
-        #     fg=palette['text_color'],
-        #     bg=palette['background_color']
-        # )
 
         
 
             
         greeting.place(relx=0.5, rely=0.1, anchor='center')
-        # log_in_fail_label.place(relx=0.53, rely=0.45, anchor='center')
         log_in_button.place(relx=0.5, rely=0.6, anchor='center')
         sign_up_button.place(relx=0.5, rely=0.7, anchor='center')
         username_entry.place(relx=0.31, rely=0.35, anchor='w')
@@ -445,7 +437,7 @@ class Gui:
         all_checkbox_var = tk.IntVar()
         all_checkbox = tk.Checkbutton(
             button_frame,
-            text='All',
+            text='All Students',
             font=("Garamond", 14),
             width=19,
             border=0,  # Remove the border
@@ -486,23 +478,23 @@ class Gui:
                 
                 
         export_button = tk.Button(
-            button_frame,
+            logout_frame,
             text='Export Attendance',
             font=("Garamond", 14),
             border=0,  # Remove the border
             width=21,
-            command=lambda: export_attendance(self)
-            ,
+            command=lambda: export_attendance(self),
             bg=palette['button_color'],
             fg=palette['text_color']
         )
         
 
 
-        export_button.pack(side=tk.TOP, pady=2)
+
         welcome_label.pack(side=tk.TOP)
         logout_frame.pack(side=tk.TOP, padx=2, pady=2)
         show_log_button.pack(side=tk.LEFT, padx=2, pady=2)
+        export_button.pack(side=tk.LEFT, padx=2, pady=2)
         log_out_button.pack(side=tk.LEFT, padx=2, pady=2)
         self.listbox.pack(side=tk.LEFT, expand=True, padx=2, pady=2)
         button_frame.pack(side=tk.RIGHT, expand=True, padx=2)  # Pack the button frame to the left with some padding
