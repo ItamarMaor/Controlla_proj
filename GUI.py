@@ -7,6 +7,9 @@ from server import Server
 import hashlib
 import threading
 import re
+import os
+import pandas as pd
+import datetime
 
 palette = {
     'background_color': '#b2b2b2',
@@ -26,6 +29,7 @@ class Gui:
         self.failed_login = False
         self.sign_up_success = False
         self.is_valid_password = False
+        self.is_valid_username = False
 
     def login(self):
         login_window = tk.Tk()
@@ -43,9 +47,11 @@ class Gui:
                     self.server = Server('0.0.0.0',5000)
                     threading.Thread(target=self.server.start).start()  # Start the server on a separate thread
                     self.server.username = uname
+                    self.server.lesson_start_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 self.admin_window()
             else:
                 unvalid_password.place_forget()
+                unvalid_username.place_forget()
                 if self.sign_up_success:
                     sign_up_success_label.place_forget()
                 login_failed()
@@ -60,15 +66,14 @@ class Gui:
                 sign_up_fail()
                 return
             unvalid_password.config(text=check_password_strength(password_entry.get()))
-            # unvalid_username.config(text=check_uname_strength(uname))
+            unvalid_username.config(text=check_uname_strength(uname))
             show_is_valid_password_label()
+            show_is_valid_username_label()
             password_strength = unvalid_password.cget("text")
-            if password_strength == "Password is strong":  # Check if password is strong
+            username_strength = unvalid_username.cget("text")
+            if password_strength == "Password is strong" and username_strength == "Username is strong": 
                     self.database.insert_user(uname, password)
                     sign_up_success()
-                    # messagebox.showinfo("Signed Up Successfully", 'Log in now!')
-                    # messagebox.showinfo("User already exists", 'Please log in!')
-            
         
         def login_failed():
             log_in_fail_label.place(relx=0.53, rely=0.47, anchor='center')
@@ -80,9 +85,27 @@ class Gui:
             
         def sign_up_fail():
             sign_up_fail_label.place(relx=0.53, rely=0.8, anchor='center')
+        
+        def check_uname_strength(username):
+            conditions_of_validness = ""
+            self.is_valid_username = False
+            # Check conditions for a valid username:
+            # Username length should be between 6 and 12 characters
+            if (len(username) < 5 or len(username) > 12):
+                conditions_of_validness += "uname length should be 5-12 chars\n"
+            # Username should not contain any whitespace character
+            if re.search("\s", username):
+                conditions_of_validness += "No whitespace\n"
+            # Username should contain only english and numbers
+            if not re.match("^[A-Za-z0-9_-]*$", username):
+                conditions_of_validness += "uname is only letter, underscores, dashes and numbers\n"
+            elif conditions_of_validness == "":
+                conditions_of_validness = "Username is strong"
+                self.is_valid_username = True
+                
+            return conditions_of_validness
             
         def check_password_strength(password):
-            password = password_entry.get()
             conditions_of_validness = ""
             self.is_valid_password = False
             # Check conditions for a valid password:
@@ -98,8 +121,8 @@ class Gui:
             # Password should contain at least one uppercase letter
             if not re.search("[A-Z]", password):
                 conditions_of_validness += "At least one uppercase letter\n"
-            # Password should contain at least one special character among '$', '#', '@'
-            if not re.search("[$#@]", password):
+            # Password should contain at least one special character.
+            if not re.search("[!-\/:-@[-`{-~]", password):
                 conditions_of_validness += "At least one special char\n"
             # Password should not contain any whitespace character
             if re.search("\s", password):
@@ -107,34 +130,33 @@ class Gui:
             elif conditions_of_validness == "":
                 conditions_of_validness = "Password is strong"
                 self.is_valid_password = True
-            print(conditions_of_validness)
-            print(self.is_valid_password)
-            # is_valid_password_label(conditions_of_validness)
+                
             return conditions_of_validness
             
             
         def show_is_valid_password_label():
-            # if self.is_valid_password == False:
             unvalid_password.place(relx=0.21, rely=0.56, anchor='center')
-                # self.is_showing_unvalid_password_msg = True
-            # else:
-            #     unvalid_password.place_forget()
-            #     self.is_showing_unvalid_password_msg = False
-                    
+        
+        def show_is_valid_username_label():
+            unvalid_username.place(relx=0.21, rely=0.25, anchor='center')
     
         unvalid_password = tk.Label(
             login_window,
             text= "",
             font=("Garamond", 12),
             fg=palette['text_color'],
-            bg=palette['background_color']
+            bg=palette['background_color'],
+            relief=tk.SOLID,  # Add border
+            borderwidth=1  # Set border width
         )
         unvalid_username = tk.Label(
             login_window,
             text= "",
             font=("Garamond", 12),
             fg=palette['text_color'],
-            bg=palette['background_color']
+            bg=palette['background_color'],
+            relief=tk.SOLID,  # Add border
+            borderwidth=1  # Set border width
         )
         greeting = tk.Label(
             login_window,
@@ -215,7 +237,7 @@ class Gui:
         )
         sign_up_fail_label = tk.Label(
             login_window,
-            text="user already exists",
+            text="one or more of the fields are invalid",
             font=("Garamond", 20),
             fg=palette['text_color'],
             bg=palette['background_color']
@@ -454,6 +476,30 @@ class Gui:
             command=lambda: logout()
         )
         
+        def export_attendance(self):
+            students = self.server.get_clients_attendance()
+            df = pd.DataFrame(students, columns=["date","Lesson Start Time", "number", "Name", "Arrival Time", "Late Time"])
+            file_name = "students_attendance" + datetime.datetime.now().strftime("%Y-%m-%d")
+            filename = file_name + '.xlsx'
+            df.to_excel(filename, index=False)
+            os.startfile(filename)
+                
+                
+        export_button = tk.Button(
+            button_frame,
+            text='Export Attendance',
+            font=("Garamond", 14),
+            border=0,  # Remove the border
+            width=21,
+            command=lambda: export_attendance(self)
+            ,
+            bg=palette['button_color'],
+            fg=palette['text_color']
+        )
+        
+
+
+        export_button.pack(side=tk.TOP, pady=2)
         welcome_label.pack(side=tk.TOP)
         logout_frame.pack(side=tk.TOP, padx=2, pady=2)
         show_log_button.pack(side=tk.LEFT, padx=2, pady=2)
@@ -481,6 +527,7 @@ class Gui:
             if self.server.refresh:
                 self.reresh_listbox()
                 self.server.refresh = False
+    
 
     def show_log(self):
         log_window = tk.Tk()

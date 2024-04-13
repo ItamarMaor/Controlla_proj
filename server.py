@@ -29,6 +29,7 @@ class Server(Thread):
         self.utils = ServerFunctions()
         self.messages = []
         self.refresh = False
+        self.lesson_start_time = ""
         logging.basicConfig(filename='server.log', filemode='a', level=logging.INFO)
         
         print(f"Server listening on {self.host}:{self.port}")
@@ -78,6 +79,25 @@ class Server(Thread):
             
         return connected_list
     
+    def get_clients_attendance(self):
+        clients_attendance = []
+        counter = 0
+        for client_thread in self.client_threads:
+            while client_thread.username == None:
+                pass
+            
+            counter += 1
+            date = datetime.datetime.strptime(self.lesson_start_time, "%Y-%m-%d %H:%M:%S").strftime("%Y-%m-%d")
+            lesson_start_time = datetime.datetime.strptime(self.lesson_start_time, "%Y-%m-%d %H:%M:%S").strftime("%H:%M:%S")
+            arrival_time = datetime.datetime.strptime(client_thread.arrival_time, "%Y-%m-%d %H:%M:%S").strftime("%H:%M:%S")
+            time_late = datetime.datetime.strptime(client_thread.arrival_time, "%Y-%m-%d %H:%M:%S") - datetime.datetime.strptime(self.lesson_start_time, "%Y-%m-%d %H:%M:%S")
+            time_late = str(time_late)  # Convert timedelta object to string
+            time_late = datetime.datetime.strptime(time_late, "%H:%M:%S").strftime("%H:%M:%S")
+            
+            clients_attendance.append((date, lesson_start_time, counter, client_thread.username, arrival_time, time_late))
+            
+        return clients_attendance
+    
     def get_thread_by_ip_and_username(self, selection):
         for client_thread in self.client_threads:
             if [client_thread.ip, client_thread.username] == selection:
@@ -103,7 +123,8 @@ class ClientThread(Thread):
         self.port = port
         self.client_socket = client_socket
         self.encryption = HybridEncryptionServer()
-        self.symetric_key = self.encryption.generate_symetric_key() #new
+        self.symetric_key = self.encryption.generate_symetric_key()
+        self.arrival_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.username = None
         self.teacher = teacher
         self.messages = []

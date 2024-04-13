@@ -10,6 +10,9 @@ import select
 from cryptography.fernet import Fernet
 from Crypto.Cipher import PKCS1_OAEP
 from Crypto.PublicKey import RSA
+import os
+import pandas as pd
+from tkinter import Button, Tk
 
 class Database:
     def __init__(self):
@@ -135,6 +138,12 @@ class ServerFunctions():
                 _, client_username = self.encryption.decrypt(data, public_key)
                 break
         return client_username.decode('utf-8') 
+    
+    def attendance_report(self, students):
+        df = pd.DataFrame(students, columns=["Name", "Arrival Time"])
+        filename = 'students_attendance.xlsx'
+        df.to_excel(filename, index=False)
+        os.startfile(filename)
     
 class HybridEncryptionServer():
     def __init__(self):
