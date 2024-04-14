@@ -100,3 +100,39 @@ INFO:root:2024-04-11 11:51:17 - Teacher:  - Target: itamar 127.0.0.1 - Command: 
 INFO:root:2024-04-12 13:09:36 - Teacher:  - Target: hhhh 127.0.0.1 - Command: screenshot
 =======
 >>>>>>> d4b0d88ec70b3f4e6221892bafbd77c73b2feafd
+INFO:root:2024-04-13 21:00:27 - Teacher: Shaul123 - Target: shugi 127.0.0.1 - Command: announce - Data: hi
+INFO:root:2024-04-13 21:00:34 - Teacher: Shaul123 - Target: shugi 127.0.0.1 - Command: screenshot
+INFO:root:2024-04-13 21:00:57 - Teacher: Shaul123 - Target: shugi 127.0.0.1 - Command: block
+INFO:root:2024-04-13 21:01:07 - Teacher: Shaul123 - Target: shugi 127.0.0.1 - Command: unblock
+INFO:root:2024-04-13 21:10:19 - Teacher: Shaul123 - Target: shugi 127.0.0.1 - Command: announce - Data: what up my fav student
+INFO:root:2024-04-13 21:10:27 - Teacher: Shaul123 - Target: shugi 127.0.0.1 - Command: block
+INFO:root:2024-04-13 21:11:08 - Teacher: Shaul123 - Target: shugi 127.0.0.1 - Command: unblock
+INFO:root:2024-04-13 21:11:28 - Teacher: Shaul123 - Target: shugi 127.0.0.1 - Command: block
+INFO:root:2024-04-13 21:11:33 - Teacher: Shaul123 - Target: shugi 127.0.0.1 - Command: announce - Data: hi
+INFO:root:2024-04-13 21:11:36 - Teacher: Shaul123 - Target: shugi 127.0.0.1 - Command: unblock
+INFO:root:2024-04-13 21:11:39 - Teacher: Shaul123 - Target: shugi 127.0.0.1 - Command: block
+INFO:root:2024-04-13 21:11:40 - Teacher: Shaul123 - Target: shugi 127.0.0.1 - Command: unblock
+INFO:root:2024-04-13 21:11:51 - Teacher: Shaul123 - Target: shugi 127.0.0.1 - Command: block
+INFO:root:2024-04-13 21:11:51 - Teacher: Shaul123 - Target: shugi 127.0.0.1 - Command: unblock
+INFO:root:2024-04-13 21:11:52 - Teacher: Shaul123 - Target: shugi 127.0.0.1 - Command: block
+INFO:root:2024-04-13 21:11:53 - Teacher: Shaul123 - Target: shugi 127.0.0.1 - Command: unblock
+INFO:root:2024-04-13 21:11:54 - Teacher: Shaul123 - Target: shugi 127.0.0.1 - Command: block
+INFO:root:2024-04-13 21:11:56 - Teacher: Shaul123 - Target: shugi 127.0.0.1 - Command: unblock
+INFO:root:2024-04-13 21:12:14 - Teacher: Shaul123 - Target: shugi 127.0.0.1 - Command: block
+INFO:root:2024-04-13 21:12:14 - Teacher: Shaul123 - Target: shugi 127.0.0.1 - Command: unblock
+INFO:root:2024-04-14 15:52:59 - Teacher: Shaul123 - Target: omri 192.168.1.207 - Command: screenshot
+INFO:root:2024-04-14 15:54:12 - Teacher: Shaul123 - Target: nono 192.168.1.207 - Command: block
+INFO:root:2024-04-14 15:54:15 - Teacher: Shaul123 - Target: nono 192.168.1.207 - Command: unblock
+INFO:root:2024-04-14 15:54:55 - Teacher: Shaul123 - Target: nono 192.168.1.207 - Command: screenshot
+INFO:root:2024-04-14 15:55:02 - Teacher: Shaul123 - Target: nono 192.168.1.207 - Command: block
+INFO:root:2024-04-14 15:55:02 - Teacher: Shaul123 - Target: nono 192.168.1.207 - Command: unblock
+INFO:root:2024-04-14 15:55:03 - Teacher: Shaul123 - Target: nono 192.168.1.207 - Command: block
+INFO:root:2024-04-14 15:55:04 - Teacher: Shaul123 - Target: nono 192.168.1.207 - Command: unblock
+INFO:root:2024-04-14 15:55:08 - Teacher: Shaul123 - Target: nono 192.168.1.207 - Command: announce - Data: hhh
+INFO:root:2024-04-14 15:55:28 - Teacher: Shaul123 - Target: nono 192.168.1.207 - Command: announce - Data: nigga bitch mothefucka
+INFO:root:2024-04-14 15:56:15 - Teacher: Shaul123 - Target: nono 192.168.1.207 - Command: announce - Data: your class work is: 1/ you bitvh 2/ you itamar 3/ you shugi ok?
+INFO:root:2024-04-14 15:57:55 - Teacher: Shaul123 - Target: nono 192.168.1.207 - Command: announce - Data: omri LOVE BURMAN
+INFO:root:2024-04-14 15:59:09 - Teacher: Shaul123 - Target: nono 192.168.1.207 - Command: screenshot
+INFO:root:2024-04-14 15:59:24 - Teacher: Shaul123 - Target: nono 192.168.1.207 - Command: block
+INFO:root:2024-04-14 15:59:36 - Teacher: Shaul123 - Target: nono 192.168.1.207 - Command: unblock
+INFO:root:2024-04-14 15:59:37 - Teacher: Shaul123 - Target: nono 192.168.1.207 - Command: shutdown

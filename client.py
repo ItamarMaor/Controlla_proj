@@ -76,7 +76,7 @@ class Client:
     
     def shutdown_computer(self):
         self.client_socket.close()
-        os.system("shutdown /s /t 15")
+        os.system("shutdown /s /t 5")
               
     def screenshot(self):
         pic = ImageGrab.grab()
