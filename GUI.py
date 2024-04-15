@@ -1,15 +1,13 @@
 import tkinter as tk
-from tkintertable import TableCanvas
-from tkinter import messagebox
-from server_utilities import Database
-from server_utilities import ServerFunctions
-from server import Server
 import hashlib
 import threading
 import re
 import os
 import pandas as pd
 import datetime
+from server_utilities import Database
+from server_utilities import ServerFunctions
+from server import Server
 
 palette = {
     'background_color': '#b2b2b2',

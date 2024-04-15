@@ -1,18 +1,13 @@
 import sqlite3
 import tkinter as tk
-from tkinter import simpledialog
 from PIL import Image
 import gzip
-from threading import Thread
-import threading
-import time
 import select
 from cryptography.fernet import Fernet
 from Crypto.Cipher import PKCS1_OAEP
 from Crypto.PublicKey import RSA
 import os
 import pandas as pd
-from tkinter import Button, Tk
 
 class Database:
     def __init__(self):
@@ -191,39 +186,3 @@ class HybridEncryptionServer():
         ciphertext = cipher.encrypt(plaintext)
         return ciphertext
     
-    # # a.insert_student('1227.0.0.1', 'bb')
-
-
-    
-    # # Create a cursor
-    # cursor = conn.cursor()
-
-    # # Create a table
-    # cursor.execute('''
-    #     CREATE TABLE IF NOT EXISTS students (
-    #         id INTEGER PRIMARY KEY,
-    #         name TEXT,
-    #         age INTEGER
-    #     )
-    # ''')
-
-    # # Insert data
-    # cursor.execute('''
-    #     INSERT INTO students (name, age) VALUES (?, ?)
-    # ''', ('Alice', 22),)
-    # conn.commit()
-
-    # # Query data
-    # cursor.execute('SELECT * FROM students')
-    # rows = cursor.fetchall()
-
-    # for row in rows:
-    #     print(row)
-
-    # # Update and delete data
-    # cursor.execute('UPDATE students SET age = ? WHERE name = ?', (23, 'Alice'))
-    # cursor.execute('DELETE FROM students WHERE name = ?', ('Alice',))
-    # conn.commit()
-
-    # # Close the connection
-    # conn.close()
