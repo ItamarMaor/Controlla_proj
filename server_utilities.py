@@ -145,12 +145,26 @@ class Database:
 
 class ServerFunctions():
     def show_screenshot(self, data):
-        '''this function translates the photo from byte back to png and shows it'''
+        '''Translates the photo from bytes back to PNG format and displays it.
+
+        Args:
+            data (bytes): The compressed image data.
+
+        Returns:
+            None
+
+        '''
         decompressed_data = gzip.decompress(data)
         image = Image.frombytes("RGB", (1920, 1080), decompressed_data)
         image.show()
 
     def annoucment_input(self):
+        """
+        Prompts the user to enter an announcement and returns the entered announcement message.
+
+        Returns:
+            str: The announcement message entered by the user.
+        """
         def on_click():
             global announcment_msg
             announcment_msg = announcment_entry.get()
@@ -170,6 +184,17 @@ class ServerFunctions():
         return announcment_msg
     
     def recv_uname(self, conn_client_socket, public_key):
+        """
+        Receives the username from the client.
+
+        Args:
+            conn_client_socket (socket): The client socket for receiving data.
+            public_key (str): The public key used for encryption.
+
+        Returns:
+            str: The received client username.
+
+        """
         while True:
             # Check if the client socket is ready for receiving data
             rlist, _, _ = select.select([conn_client_socket], [], [], 60)
@@ -179,9 +204,19 @@ class ServerFunctions():
                 data = conn_client_socket.recv(int(len))
                 _, client_username = self.encryption.decrypt(data, public_key)
                 break
-        return client_username.decode('utf-8') 
+        return client_username.decode('utf-8')
     
     def attendance_report(self, students):
+        """
+        Generates an attendance report for the given list of students.
+
+        Args:
+            students (list): A list of dictionaries containing student information.
+                Each dictionary should have the keys "Name" and "Arrival Time".
+
+        Returns:
+            None
+        """
         df = pd.DataFrame(students, columns=["Name", "Arrival Time"])
         filename = 'students_attendance.xlsx'
         df.to_excel(filename, index=False)

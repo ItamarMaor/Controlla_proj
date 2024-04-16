@@ -210,10 +210,23 @@ class ClientThread(Thread):
         print("[+] New server socket thread started for " + ip + ":" + str(port))
 
     def run(self): 
+        """
+        Runs the server and handles the communication with the client.
+
+        This method performs the following steps:
+        1. Imports the public key from the client.
+        2. Sends the symmetric key encrypted with the client's public key.
+        3. Receives the username from the client.
+        4. Prints the accepted connection information.
+        5. Continuously sends and receives messages with the client.
+
+        Note: This method assumes that the `encryption`, `client_socket`, `symmetric_key`, and `utils` attributes are properly initialized.
+
+        """
         self.encryption.key = self.encryption.import_public_key(self.client_socket.recv(1024))
-        self.client_socket.sendall(self.encryption.encrypt_asymmetric(self.symetric_key, self.encryption.key))
+        self.client_socket.sendall(self.encryption.encrypt_asymmetric(self.symmetric_key, self.encryption.key))
         
-        self.username = self.utils.recv_uname(self.client_socket, self.symetric_key)
+        self.username = self.utils.recv_uname(self.client_socket, self.symmetric_key)
         print(f"\nAccepted connection from user: {self.username} - {self.ip, self.port}")
         
         while True: 
@@ -221,6 +234,16 @@ class ClientThread(Thread):
             self.recv_messages()
 
     def send_messages(self):
+        """
+        Sends messages to the client.
+
+        This method iterates through the messages stored in the `self.messages` list and sends them to the client.
+        Each message consists of a command (`cmmd`) and data associated with the command.
+        The method logs the details of each message before sending it.
+
+        Returns:
+            None
+        """
         for cmmd, data in self.messages:
             timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             
@@ -232,27 +255,57 @@ class ClientThread(Thread):
             self.client_socket.send(str(len(ciphertext)).zfill(8).encode())
             self.client_socket.sendall(ciphertext)
             self.messages.remove((cmmd, data))
-            # if cmmd == 1:
-            #     self.client_threads.remove(self)
-            #     break
+
     
     def recv_messages(self):
+        """
+        Receive messages from the client socket.
+
+        This method checks if the client socket is ready for receiving data. If data is available,
+        it receives the encrypted message from the client socket, decrypts it using the symmetric key,
+        and then handles the response.
+
+        Note: This method assumes that the `encryption` and `symmetric_key` attributes have been properly set.
+
+        Returns:
+            None
+        """
         # Check if the client socket is ready for receiving data
         rlist, _, _ = select.select([self.client_socket], [], [], 0)
         if self.client_socket in rlist:
             recv_len = int(self.client_socket.recv(8).decode())
             ciphertext = self.client_socket.recv(recv_len)
             
-            cmmd, data = self.encryption.decrypt(ciphertext, self.symetric_key)
+            cmmd, data = self.encryption.decrypt(ciphertext, self.symmetric_key)
 
             self.handle_response(cmmd, data)
             
     def format_message(self, cmmd, data):
+        """
+        Formats the message by encoding the command and data, and encrypts it using the symmetric key.
+
+        Args:
+            cmmd (str): The command to be included in the message.
+            data (str): The data to be included in the message.
+
+        Returns:
+            bytes: The encrypted message.
+
+        """
         msg = f"{cmmd}{data}".encode()
-        
         return self.encryption.encrypt(msg, self.symetric_key)
             
     def handle_response(self, cmmd, data):
+        """
+        Handles the response received from the client.
+
+        Parameters:
+        - cmmd (int): The command code received from the client.
+        - data (bytes): The data received from the client.
+
+        Returns:
+        None
+        """
         cmmd = int(cmmd)
         if cmmd == 1:
             # Command: shutdown
