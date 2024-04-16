@@ -10,14 +10,48 @@ class WindowBlocker(threading.Thread):
         self.block_key = False
 
     def run(self):
+        """
+        Runs the method and displays a blocking window.
+
+        This method sets the `block_key` attribute to True and then displays a blocking window.
+
+        Parameters:
+        None
+
+        Returns:
+        None
+        """
         self.block_key = True
         self._display_blocking_window()
 
     def unblock(self):
-        with threading.Lock():
-            self.block_key = False
+            """
+            Unblocks the client.
+
+            This method sets the `block_key` attribute of the client to False,
+            allowing the client to continue processing.
+
+            Parameters:
+                None
+
+            Returns:
+                None
+            """
+            with threading.Lock():
+                self.block_key = False
 
     def _display_blocking_window(self):
+        """
+        Displays a blocking window that covers the entire screen and prevents keyboard input.
+        This method creates a Tkinter window with a black background and displays a message to listen to the teacher.
+        The window remains on top of other windows and cannot be closed until the `block_key` flag is set to False.
+
+        Args:
+            None
+
+        Returns:
+            None
+        """
         self.root = tk.Tk()
         self.root.attributes("-fullscreen", True)
         self.root.title("Keyboard Blocker")
@@ -31,7 +65,6 @@ class WindowBlocker(threading.Thread):
                     font=("Garamond", 20), fg='white', bg='black')
         label.pack(side="top", fill="both", expand=True)
         logo.pack(side="bottom", fill="both", expand=True)
-        # tk.Button(self.root, text="Unblock", command=self.unblock).pack(side="bottom")
 
         while self.block_key:
             self.root.update()
@@ -49,10 +82,24 @@ class HybridEncryptionClient():
         self.CHUNK_SIZE = 2**32 - 33
         
     def export_public_key(self):
-        return self.public_key.export_key()
+            """
+            Export the public key.
+
+            Returns:
+                bytes: The exported public key.
+            """
+            return self.public_key.export_key()
     
     def encrypt(self, plaintext):
-        # Implement code to encrypt ciphertext using symmetric encryption
+        """
+        Encrypts the given plaintext using symmetric encryption.
+
+        Args:
+            plaintext (bytes): The plaintext to be encrypted.
+
+        Returns:
+            bytes: The encrypted ciphertext.
+        """
         cipher = Fernet(self.symetric_key)
         ciphertext = b""
         
@@ -61,11 +108,19 @@ class HybridEncryptionClient():
             plaintext = plaintext[self.CHUNK_SIZE:]
             encrypted_chunk = cipher.encrypt(chunk)
             ciphertext += encrypted_chunk
-    
+
         return ciphertext
     
     def decrypt(self, ciphertext):
-        # Implement code to decrypt ciphertext using symmetric encryption
+        """
+        Decrypts the given ciphertext using symmetric encryption.
+
+        Args:
+            ciphertext (bytes): The ciphertext to be decrypted.
+
+        Returns:
+            tuple: A tuple containing the command (cmmd) and the decrypted data (data).
+        """
         cipher = Fernet(self.symetric_key)
         plaintext = b""
         
@@ -82,7 +137,20 @@ class HybridEncryptionClient():
         return cmmd, data
     
     def decrypt_asymmetric(self, ciphertext, private_key):
-        # Implement code to encrypt plaintext using asymmetric encryption
+        """
+        Decrypts the given ciphertext using asymmetric encryption.
+
+        Args:
+            ciphertext (bytes): The encrypted ciphertext to be decrypted.
+            private_key (RSA._RSAobj): The private key used for decryption.
+
+        Returns:
+            str: The decrypted plaintext.
+
+        Raises:
+            None
+
+        """
         cipher = PKCS1_OAEP.new(private_key)
         plaintext = cipher.decrypt(ciphertext)
 

@@ -15,6 +15,24 @@ commands = {'get_client_username': 0, 'shutdown': 1, 'screenshot': 2, 'block': 3
 cmmd_num_to_name = {v: k for k, v in commands.items()}
         
 class Server(Thread):
+    """
+    Represents a server that listens for client connections and handles client threads.
+
+    Attributes:
+        host (str): The host address to bind the server socket to.
+        port (int): The port number to bind the server socket to.
+        server_socket (socket.socket): The server socket object.
+        database (Database): The database object for storing client information.
+        encryption (HybridEncryptionServer): The encryption object for secure communication.
+        messages_lock (threading.Lock): The lock object for synchronizing access to the messages list.
+        client_threads (list): The list of active client threads.
+        username (str): The username of the server.
+        utils (ServerFunctions): The utility functions for server operations.
+        messages (list): The list of messages received from clients.
+        refresh (bool): Flag indicating whether the server needs to refresh the client list.
+        lesson_start_time (str): The start time of the lesson.
+    """
+
     def __init__(self, host, port):
         super().__init__()
         self.host = host
@@ -36,6 +54,10 @@ class Server(Thread):
         print(f"Server listening on {self.host}:{self.port}")
 
     def run(self):
+        """
+        Starts the server and listens for client connections.
+        Creates a new client thread for each connected client.
+        """
         while True:
             client_socket, (ip, port) = self.server_socket.accept()
             client_thread = ClientThread(ip, port, client_socket, self.username)
@@ -44,16 +66,32 @@ class Server(Thread):
             self.refresh = True
             
     def close(self):
+        """
+        Closes all client sockets and the server socket.
+        """
         for client_thread in self.client_threads:
             client_thread.client_socket.close()
         self.server_socket.close()
             
     def client_exit(self, client_socket, client_address):
+        """
+        Handles the disconnection of a client.
+
+        Args:
+            client_socket (socket.socket): The client socket object.
+            client_address (tuple): The client address (IP, port).
+        """
         del self.clients[client_address]
         client_socket.close()
         print(f"Client at {client_address} has disconnected")
         
     def broadcast(self, message):
+        """
+        Sends a message to all connected clients.
+
+        Args:
+            message (str): The message to broadcast.
+        """
         for client_socket in self.clients.values():
             try:
                 client_socket.sendall(f"Broadcast: {message}".encode('utf-8'))
@@ -61,6 +99,13 @@ class Server(Thread):
                 print(f"Error broadcasting message to client: {e}")
 
     def send_to_client(self, target_address, message):
+        """
+        Sends a message to a specific client.
+
+        Args:
+            target_address (tuple): The target client address (IP, port).
+            message (str): The message to send.
+        """
         try:
             target_socket = self.usernames.get(target_address)
             if target_socket:
@@ -71,6 +116,12 @@ class Server(Thread):
             print(f"Error sending message to client: {e}")
             
     def get_connected_clients(self):
+        """
+        Retrieves a list of connected clients.
+
+        Returns:
+            list: A list of tuples containing the client IP and username.
+        """
         connected_list = []
         
         for client_thread in self.client_threads:
@@ -81,6 +132,13 @@ class Server(Thread):
         return connected_list
     
     def get_clients_attendance(self):
+        """
+        Retrieves the attendance information of connected clients.
+
+        Returns:
+            list: A list of tuples containing the date, lesson start time, client counter,
+                  client username, arrival time, and time late.
+        """
         clients_attendance = []
         counter = 0
         for client_thread in self.client_threads:
@@ -100,11 +158,29 @@ class Server(Thread):
         return clients_attendance
     
     def get_thread_by_ip_and_username(self, selection):
+        """
+        Retrieves the client thread object based on the IP and username selection.
+
+        Args:
+            selection (list): The IP and username selection.
+
+        Returns:
+            ClientThread: The client thread object.
+        """
         for client_thread in self.client_threads:
             if [client_thread.ip, client_thread.username] == selection:
                 return client_thread
             
     def get_log_for_teacher(self, teachername):
+        """
+        Retrieves the log entries for a specific teacher.
+
+        Args:
+            teachername (str): The name of the teacher.
+
+        Returns:
+            str: The filtered log entries for the teacher.
+        """
         filtered_string = ''
         with open('server.log', 'r') as f:
             logs = f.readlines()

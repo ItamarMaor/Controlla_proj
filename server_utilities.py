@@ -9,16 +9,23 @@ from Crypto.PublicKey import RSA
 import os
 import pandas as pd
 
+import sqlite3
+
 class Database:
     def __init__(self):
         self.database = 'Contralla_db.sqlite'
 
     def create_conn(self):
-        '''creates connection to the database'''
+        '''Creates a connection to the database.
+
+        Returns:
+            tuple: A tuple containing the connection and cursor objects.
+        '''
         conn = sqlite3.connect(self.database)
-        return (conn ,conn.cursor())
+        return (conn, conn.cursor())
         
     def create_user_table(self):
+        '''Creates the users table if it doesn't exist.'''
         conn, cursor = self.create_conn()
         # Create a table
         cursor.execute('''
@@ -31,6 +38,12 @@ class Database:
         conn.close()
     
     def insert_user(self, username, password):
+        '''Inserts a new user into the users table.
+
+        Args:
+            username (str): The username of the user.
+            password (str): The password of the user.
+        '''
         self.create_user_table()
         conn, cursor = self.create_conn()
         # Insert data
@@ -41,6 +54,11 @@ class Database:
         conn.close()
         
     def remove_user(self, username):
+        '''Removes a user from the users table.
+
+        Args:
+            username (str): The username of the user to be removed.
+        '''
         self.create_user_table()
         conn, cursor = self.create_conn()
         # delete data
@@ -48,6 +66,14 @@ class Database:
         conn.close()
         
     def check_username_exists(self, username):
+        '''Checks if a username exists in the users table.
+
+        Args:
+            username (str): The username to check.
+
+        Returns:
+            bool: True if the username exists, False otherwise.
+        '''
         self.create_user_table()
         conn, cursor = self.create_conn()
         # check if username exists
@@ -58,6 +84,15 @@ class Database:
         return username_exists
     
     def check_user(self, username, password):
+        '''Checks if a user exists in the users table.
+
+        Args:
+            username (str): The username to check.
+            password (str): The password to check.
+
+        Returns:
+            bool: True if the user exists, False otherwise.
+        '''
         self.create_user_table()
         conn, cursor = self.create_conn()
         # check if user exists
@@ -68,6 +103,7 @@ class Database:
         return user_exists
     
     def create_student_table(self):
+        '''Creates the students table if it doesn't exist.'''
         conn, cursor = self.create_conn()
         # Create a table
         cursor.execute('''
@@ -80,6 +116,12 @@ class Database:
         conn.close()
     
     def insert_student(self, ip, name):
+        '''Inserts a new student into the students table.
+
+        Args:
+            ip (str): The IP address of the student.
+            name (str): The name of the student.
+        '''
         self.create_student_table()
         conn, cursor = self.create_conn()
         # Insert data
@@ -90,6 +132,11 @@ class Database:
         conn.close()
         
     def remove_student(self, name):
+        '''Removes a student from the students table.
+
+        Args:
+            name (str): The name of the student to be removed.
+        '''
         self.create_student_table()
         conn, cursor = self.create_conn()
         # delete data
@@ -141,19 +188,50 @@ class ServerFunctions():
         os.startfile(filename)
     
 class HybridEncryptionServer():
+    """
+    A class that provides hybrid encryption functionality for a server.
+
+    Attributes:
+        key: The encryption key used for symmetric encryption.
+        CHUNK_SIZE: The size of each chunk used for encryption and decryption.
+    """
+
     def __init__(self):
-        # Initialize any necessary variables or objects here
         self.key = None
         self.CHUNK_SIZE = 2**32 - 33
     
     def generate_symetric_key(self):
-        # Implement code to generate encryption key
+        """
+        Generates a symmetric encryption key.
+
+        Returns:
+            The generated symmetric encryption key.
+        """
         return Fernet.generate_key()
     
     def import_public_key(self, pem_key):
+        """
+        Imports a public key for asymmetric encryption.
+
+        Args:
+            pem_key: The PEM-encoded public key.
+
+        Returns:
+            The imported public key.
+        """
         return RSA.import_key(pem_key)
     
     def encrypt(self, plaintext, symetric_key):
+        """
+        Encrypts plaintext using symmetric encryption.
+
+        Args:
+            plaintext: The plaintext to be encrypted.
+            symetric_key: The symmetric encryption key.
+
+        Returns:
+            The encrypted ciphertext.
+        """
         cipher = Fernet(symetric_key)
         ciphertext = b""
         
@@ -166,6 +244,16 @@ class HybridEncryptionServer():
         return ciphertext
     
     def decrypt(self, ciphertext, symetric_key):
+        """
+        Decrypts ciphertext using symmetric encryption.
+
+        Args:
+            ciphertext: The ciphertext to be decrypted.
+            symetric_key: The symmetric encryption key.
+
+        Returns:
+            The decrypted plaintext.
+        """
         cipher = Fernet(symetric_key)
         plaintext = b""
 
@@ -181,7 +269,16 @@ class HybridEncryptionServer():
         return cmmd, data
     
     def encrypt_asymmetric(self, plaintext, public_key):
-        # Implement code to encrypt plaintext using asymmetric encryption
+        """
+        Encrypts plaintext using asymmetric encryption.
+
+        Args:
+            plaintext: The plaintext to be encrypted.
+            public_key: The public key for asymmetric encryption.
+
+        Returns:
+            The encrypted ciphertext.
+        """
         cipher = PKCS1_OAEP.new(public_key)
         ciphertext = cipher.encrypt(plaintext)
         return ciphertext

@@ -21,6 +21,17 @@ class Client:
         self.encryption = HybridEncryptionClient()
 
     def connect(self):
+        """
+        Connects the client to the server and performs necessary encryption setup.
+
+        This method establishes a connection to the server using the provided server address and port.
+        It sends the client's public key to the server and receives the symmetric key from the server,
+        which is then decrypted using the client's private key. Finally, it sends a formatted message
+        containing the client's username to the server.
+
+        Returns:
+            None
+        """
         self.client_socket.connect((self.server_address, self.server_port))
         print("Connected to the server.")
         
@@ -37,6 +48,14 @@ class Client:
         self.client_socket.sendall(msg)
         
     def receive_messages(self):
+        """
+        Receives messages from the server.
+
+        This method receives a message from the server, decrypts it, and then handles the requests based on the decrypted data.
+
+        Returns:
+            None
+        """
         recv_len = self.client_socket.recv(8).decode('utf-8')
         ciphertext = self.client_socket.recv(int(recv_len))
         
@@ -45,13 +64,22 @@ class Client:
         self.handle_requests(cmmd, data)
     
     def handle_requests(self, cmmd, data):
+        """
+        Handles different commands received from the server.
+
+        Args:
+            cmmd (str): The command received from the server.
+            data (str): Additional data associated with the command.
+
+        Returns:
+            None
+        """
         with threading.Lock():
             if cmmd == '0':
                 # Command: get_client_username
                 pass
             elif cmmd == '1':
                 # Command: shutdown
-                # self.client_socket.close()
                 self.shutdown_computer()
             elif cmmd == '2':
                 # Command: screenshot
@@ -75,33 +103,65 @@ class Client:
                 app.MainLoop()
     
     def shutdown_computer(self):
+        """
+        Shuts down the computer by closing the client socket and initiating a system shutdown.
+
+        This method closes the client socket and then uses the `os.system` function to execute the
+        command "shutdown /s /t 5", which shuts down the computer after a delay of 5 seconds.
+
+        Returns:
+            None
+        """
         self.client_socket.close()
         os.system("shutdown /s /t 5")
               
     def screenshot(self):
-        pic = ImageGrab.grab()
-        pic_bytes = pic.tobytes()
-        compressed_pic = gzip.compress(pic_bytes)
-        
-        return pickle.dumps(compressed_pic)
+            """
+            Takes a screenshot of the screen and returns the compressed image data.
+
+            Returns:
+                bytes: Compressed image data.
+            """
+            pic = ImageGrab.grab()
+            pic_bytes = pic.tobytes()
+            compressed_pic = gzip.compress(pic_bytes)
+            
+            return pickle.dumps(compressed_pic)
             
     def run(self):
-        try:
-            self.connect()
-            receive_thread = threading.Thread(target=self.send_recv_messages, daemon=True)
-            receive_thread.start()
-            receive_thread.join()
+            """
+            Connects to the server and starts a thread to send and receive messages.
+            """
+            try:
+                self.connect()
+                receive_thread = threading.Thread(target=self.send_recv_messages, daemon=True)
+                receive_thread.start()
+                receive_thread.join()
 
-        except KeyboardInterrupt:
-            print("Client shutting down.")
-        finally:
-            self.client_socket.close()
+            except KeyboardInterrupt:
+                print("Client shutting down.")
+            finally:
+                self.client_socket.close()
 
     def send_recv_messages(self):
+        """
+        Sends and receives messages to/from the server.
+
+        This method continuously receives messages from the server and sends responses
+        based on the received messages. It iterates over the messages received and formats
+        each message before sending it to the server. The method also removes the processed
+        messages from the list of messages.
+
+        Args:
+            None
+
+        Returns:
+            None
+        """
         while True:
             self.receive_messages()
             
-            #responsible for responses
+            # responsible for responses
             for cmmd, data in self.messages:
                 msg = self.format_message(cmmd, data)
                 
@@ -111,6 +171,17 @@ class Client:
                 self.messages.remove((cmmd, data))
                 
     def format_message(self, cmmd, data):
+        """
+        Formats the message to be sent to the server.
+
+        Args:
+            cmmd (str): The command to be executed.
+            data (str): The data associated with the command.
+
+        Returns:
+            bytes: The encrypted message to be sent to the server.
+        """
+        #screenshot is already encoded
         if cmmd != commands['screenshot']:
             data = data.encode()
         
@@ -120,6 +191,12 @@ class Client:
         
     
     def ask_for_username(self):
+        """
+        Prompts the user to enter a username and returns the entered username.
+
+        Returns:
+            str: The username entered by the user.
+        """
         def on_click():
             global uname
             uname = name_entry.get()
@@ -140,6 +217,16 @@ class Client:
     
     
 def start(server_address, server_port):
+    """
+    Connects to the server and starts the client.
+
+    Args:
+        server_address (str): The IP address or hostname of the server.
+        server_port (int): The port number of the server.
+
+    Returns:
+        None
+    """
     while True:
         try:
             a = Client(server_address, server_port)

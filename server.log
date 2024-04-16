@@ -134,3 +134,6 @@ INFO:root:2024-04-14 15:59:09 - Teacher: Shaul123 - Target: nono 192.168.1.207 -
 INFO:root:2024-04-14 15:59:24 - Teacher: Shaul123 - Target: nono 192.168.1.207 - Command: block
 INFO:root:2024-04-14 15:59:36 - Teacher: Shaul123 - Target: nono 192.168.1.207 - Command: unblock
 INFO:root:2024-04-14 15:59:37 - Teacher: Shaul123 - Target: nono 192.168.1.207 - Command: shutdown
+INFO:root:2024-04-15 16:09:25 - Teacher: Shaul123 - Target: uriel 127.0.0.1 - Command: screenshot
+INFO:root:2024-04-15 16:09:42 - Teacher: Shaul123 - Target: uriel 127.0.0.1 - Command: block
+INFO:root:2024-04-15 16:10:17 - Teacher: Shaul123 - Target: uriel 127.0.0.1 - Command: unblock
