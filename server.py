@@ -220,13 +220,11 @@ class ClientThread(Thread):
         4. Prints the accepted connection information.
         5. Continuously sends and receives messages with the client.
 
-        Note: This method assumes that the `encryption`, `client_socket`, `symmetric_key`, and `utils` attributes are properly initialized.
-
         """
         self.encryption.key = self.encryption.import_public_key(self.client_socket.recv(1024))
-        self.client_socket.sendall(self.encryption.encrypt_asymmetric(self.symmetric_key, self.encryption.key))
+        self.client_socket.sendall(self.encryption.encrypt_asymmetric(self.symetric_key, self.encryption.key))
         
-        self.username = self.utils.recv_uname(self.client_socket, self.symmetric_key)
+        self.username = self.utils.recv_uname(self.client_socket, self.symetric_key)
         print(f"\nAccepted connection from user: {self.username} - {self.ip, self.port}")
         
         while True: 
@@ -265,7 +263,7 @@ class ClientThread(Thread):
         it receives the encrypted message from the client socket, decrypts it using the symmetric key,
         and then handles the response.
 
-        Note: This method assumes that the `encryption` and `symmetric_key` attributes have been properly set.
+        Note: This method assumes that the `encryption` and `symetric_key` attributes have been properly set.
 
         Returns:
             None
@@ -276,7 +274,7 @@ class ClientThread(Thread):
             recv_len = int(self.client_socket.recv(8).decode())
             ciphertext = self.client_socket.recv(recv_len)
             
-            cmmd, data = self.encryption.decrypt(ciphertext, self.symmetric_key)
+            cmmd, data = self.encryption.decrypt(ciphertext, self.symetric_key)
 
             self.handle_response(cmmd, data)
             
