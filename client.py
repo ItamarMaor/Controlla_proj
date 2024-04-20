@@ -228,6 +228,7 @@ def start(server_address, server_port):
         None
     """
     while True:
+        time.sleep(2)
         try:
             a = Client(server_address, server_port)
             a.run()

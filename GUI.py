@@ -637,7 +637,7 @@ class Gui:
             """
             students = self.server.get_clients_attendance()
             df = pd.DataFrame(students, columns=["date","Lesson Start Time", "number", "Name", "Arrival Time", "Late Time"])
-            file_name = "students_attendance" + datetime.datetime.now().strftime("%Y-%m-%d")
+            file_name = "students_attendance" + datetime.datetime.now().strftime("%Y-%m-%d-%H")
             filename = file_name + '.xlsx'
             df.to_excel(filename, index=False)
             os.startfile(filename)

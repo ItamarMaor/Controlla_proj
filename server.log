@@ -138,3 +138,23 @@ INFO:root:2024-04-15 16:09:25 - Teacher: Shaul123 - Target: uriel 127.0.0.1 - Co
 INFO:root:2024-04-15 16:09:42 - Teacher: Shaul123 - Target: uriel 127.0.0.1 - Command: block
 INFO:root:2024-04-15 16:10:17 - Teacher: Shaul123 - Target: uriel 127.0.0.1 - Command: unblock
 INFO:root:2024-04-16 18:04:53 - Teacher: Shaul123 - Target: Omri 127.0.0.1 - Command: screenshot
+INFO:root:2024-04-16 18:08:52 - Teacher: Shaul123 - Target: Omri 127.0.0.1 - Command: screenshot
+INFO:root:2024-04-16 18:21:21 - Teacher: Shaul123 - Target: Omri 127.0.0.1 - Command: block
+INFO:root:2024-04-16 18:21:28 - Teacher: Shaul123 - Target: Omri 127.0.0.1 - Command: unblock
+INFO:root:2024-04-16 18:21:46 - Teacher: Shaul123 - Target: Omri 127.0.0.1 - Command: block
+INFO:root:2024-04-16 18:21:51 - Teacher: Shaul123 - Target: Omri 127.0.0.1 - Command: unblock
+INFO:root:2024-04-16 18:24:01 - Teacher: Shaul123 - Target: Omri 127.0.0.1 - Command: block
+INFO:root:2024-04-16 18:24:07 - Teacher: Shaul123 - Target: Omri 127.0.0.1 - Command: unblock
+INFO:root:2024-04-16 18:27:45 - Teacher: Shaul123 - Target: Omri 127.0.0.1 - Command: announce - Data: class is over!
+INFO:root:2024-04-16 18:32:16 - Teacher: Shaul123 - Target: Omri 127.0.0.1 - Command: block
+INFO:root:2024-04-16 18:32:17 - Teacher: Shaul123 - Target: Omri 127.0.0.1 - Command: unblock
+INFO:root:2024-04-16 18:32:28 - Teacher: Shaul123 - Target: Omri 127.0.0.1 - Command: block
+INFO:root:2024-04-16 18:32:28 - Teacher: Shaul123 - Target: Omri 127.0.0.1 - Command: unblock
+INFO:root:2024-04-16 18:32:45 - Teacher: Shaul123 - Target: Omri 127.0.0.1 - Command: announce - Data: hi everyone
+INFO:root:2024-04-16 18:33:04 - Teacher: Shaul123 - Target: Omri 127.0.0.1 - Command: block
+INFO:root:2024-04-16 18:33:05 - Teacher: Shaul123 - Target: Omri 127.0.0.1 - Command: unblock
+INFO:root:2024-04-16 18:33:15 - Teacher: Shaul123 - Target: Omri 127.0.0.1 - Command: block
+INFO:root:2024-04-16 18:33:16 - Teacher: Shaul123 - Target: Omri 127.0.0.1 - Command: unblock
+INFO:root:2024-04-16 18:37:37 - Teacher: Shaul123 - Target: Omri 127.0.0.1 - Command: block
+INFO:root:2024-04-16 18:37:38 - Teacher: Shaul123 - Target: Omri 127.0.0.1 - Command: unblock
+INFO:root:2024-04-20 12:52:33 - Teacher: Shaul123 - Target: omri 192.168.1.207 - Command: shutdown
