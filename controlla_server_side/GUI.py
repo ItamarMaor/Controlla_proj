@@ -5,9 +5,9 @@ import re
 import os
 import pandas as pd
 import datetime
-from server_utilities import Database
-from server_utilities import ServerFunctions
-from server import Server
+from controlla_server_side.server_utilities import Database
+from controlla_server_side.server_utilities import ServerFunctions
+from controlla_server_side.server import Server
 
 palette = {
     'background_color': '#b2b2b2',
@@ -432,7 +432,7 @@ class Gui:
                 text="v",
                 command=announcement_revert,
                 font=("Garamond", 14),
-                border=0,  # Remove the border
+                border=0,  
                 width=2,
                 bg=palette['button_color'],
                 fg=palette['text_color'])
