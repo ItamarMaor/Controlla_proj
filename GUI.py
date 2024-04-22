@@ -5,8 +5,8 @@ import re
 import os
 import pandas as pd
 import datetime
-from controlla_server_side.server_utilities import Database
-from controlla_server_side.server_utilities import ServerFunctions
+from server_utilities import Database
+from server_utilities import ServerFunctions
 from controlla_server_side.server import Server
 
 palette = {
