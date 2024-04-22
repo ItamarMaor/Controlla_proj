@@ -4,7 +4,7 @@ import os
 from PIL import ImageGrab
 import gzip
 import pickle
-from client_utils import WindowBlocker, HybridEncryptionClient
+from controlla_client_side.client_utils import WindowBlocker, HybridEncryptionClient
 import tkinter as tk
 import wx
 import time
