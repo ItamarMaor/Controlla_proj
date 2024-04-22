@@ -9,7 +9,6 @@ from Crypto.PublicKey import RSA
 import os
 import pandas as pd
 
-import sqlite3
 
 class Database:
     def __init__(self):
@@ -42,7 +41,7 @@ class Database:
 
         Args:
             username (str): The username of the user.
-            password (str): The password of the user.
+            password (str): The hashed password of the user.
         '''
         self.create_user_table()
         conn, cursor = self.create_conn()
@@ -102,47 +101,6 @@ class Database:
         
         return user_exists
     
-    def create_student_table(self):
-        '''Creates the students table if it doesn't exist.'''
-        conn, cursor = self.create_conn()
-        # Create a table
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS students (
-                ip TEXT PRIMARY KEY,
-                name TEXT
-            )
-        ''')
-        conn.commit()
-        conn.close()
-    
-    def insert_student(self, ip, name):
-        '''Inserts a new student into the students table.
-
-        Args:
-            ip (str): The IP address of the student.
-            name (str): The name of the student.
-        '''
-        self.create_student_table()
-        conn, cursor = self.create_conn()
-        # Insert data
-        cursor.execute('''
-            INSERT INTO students (ip, name) VALUES (?, ?)
-        ''', (ip, name),)
-        conn.commit()
-        conn.close()
-        
-    def remove_student(self, name):
-        '''Removes a student from the students table.
-
-        Args:
-            name (str): The name of the student to be removed.
-        '''
-        self.create_student_table()
-        conn, cursor = self.create_conn()
-        # delete data
-        cursor.execute('DELETE FROM students WHERE name = ?', (name,))
-        conn.close()
-
 class ServerFunctions():
     def show_screenshot(self, data):
         '''Translates the photo from bytes back to PNG format and displays it.
@@ -157,31 +115,6 @@ class ServerFunctions():
         decompressed_data = gzip.decompress(data)
         image = Image.frombytes("RGB", (1920, 1080), decompressed_data)
         image.show()
-
-    def annoucment_input(self):
-        """
-        Prompts the user to enter an announcement and returns the entered announcement message.
-
-        Returns:
-            str: The announcement message entered by the user.
-        """
-        def on_click():
-            global announcment_msg
-            announcment_msg = announcment_entry.get()
-            root.destroy()
-        
-        root = tk.Tk()
-        root.wm_attributes("-topmost", True)
-        header = tk.Label(root, text='Enter your annoucment')
-        announcment_entry = tk.Entry(root)
-        ok_button = tk.Button(root, text='OK', command=on_click)
-        header.pack()
-        announcment_entry.pack()
-        ok_button.pack()
-        
-        root.mainloop()    
-        
-        return announcment_msg
     
     def recv_uname(self, conn_client_socket, public_key):
         """
@@ -205,22 +138,6 @@ class ServerFunctions():
                 _, client_username = self.encryption.decrypt(data, public_key)
                 break
         return client_username.decode('utf-8')
-    
-    def attendance_report(self, students):
-        """
-        Generates an attendance report for the given list of students.
-
-        Args:
-            students (list): A list of dictionaries containing student information.
-                Each dictionary should have the keys "Name" and "Arrival Time".
-
-        Returns:
-            None
-        """
-        df = pd.DataFrame(students, columns=["Name", "Arrival Time"])
-        filename = 'students_attendance.xlsx'
-        df.to_excel(filename, index=False)
-        os.startfile(filename)
     
 class HybridEncryptionServer():
     """

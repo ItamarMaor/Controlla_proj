@@ -13,6 +13,21 @@ commands = {'get_client_username': 0, 'shutdown': 1, 'screenshot': 2, 'block': 3
 
 class Client:
     def __init__(self, server_address, server_port):
+        """
+        Initializes a Client object.
+
+        Args:
+            server_address (str): The IP address or hostname of the server.
+            server_port (int): The port number of the server.
+
+        Attributes:
+            server_address (str): The IP address or hostname of the server.
+            server_port (int): The port number of the server.
+            client_socket (socket.socket): The socket object for the client.
+            messages (list): A list to store received messages.
+            blocker (WindowBlocker): An instance of the WindowBlocker class.
+            encryption (HybridEncryptionClient): An instance of the HybridEncryptionClient class.
+        """
         self.server_address = server_address
         self.server_port = server_port
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -152,11 +167,6 @@ class Client:
         each message before sending it to the server. The method also removes the processed
         messages from the list of messages.
 
-        Args:
-            None
-
-        Returns:
-            None
         """
         while True:
             self.receive_messages()
@@ -189,7 +199,6 @@ class Client:
         
         return self.encryption.encrypt(msg)
         
-    
     def ask_for_username(self):
         """
         Prompts the user to enter a username and returns the entered username.

@@ -74,7 +74,16 @@ class WindowBlocker(threading.Thread):
 
 class HybridEncryptionClient():
     def __init__(self):
-        # Initialize any necessary variables or objects here
+        """
+        Initializes an instance of HybridEncryptionClient.
+
+        Attributes:
+        - key: An RSA key object generated with a key size of 1024 bits.
+        - public_key: The public key derived from the RSA key.
+        - private_key: The private key derived from the RSA key.
+        - symetric_key: The symmetric key used for encryption/decryption.
+        - CHUNK_SIZE: The size of each chunk used for data transfer.
+        """
         self.key = RSA.generate(1024)
         self.public_key = self.key.publickey()
         self.private_key = self.key

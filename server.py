@@ -194,6 +194,32 @@ class Server(Thread):
 
 class ClientThread(Thread): 
     def __init__(self, ip, port, client_socket, teacher): 
+        """
+        Initializes a new instance of the Server class.
+
+        Parameters:
+        - ip (str): The IP address of the client.
+        - port (int): The port number of the clirnt.
+        - client_socket (socket): The client socket object.
+        - teacher (str): The name of the teacher.
+
+        Attributes:
+        - utils (ServerFunctions): An instance of the ServerFunctions class.
+        - ip (str): The IP address of the client.
+        - port (int): The port number of the client.
+        - client_socket (socket): The client socket object.
+        - encryption (HybridEncryptionServer): An instance of the HybridEncryptionServer class.
+        - symetric_key (str): The generated symmetric key.
+        - arrival_time (str): The arrival time of the client connection.
+        - username (str): The username of the client.
+        - teacher (str): The name of the teacher.
+        - messages (list): A list to store messages that will be sent to the client.
+        - is_blocked (bool): A flag indicating if the client is blocked.
+        - lock (Lock): A threading lock object.
+
+        Returns:
+        None
+        """
         Thread.__init__(self) 
         self.utils = ServerFunctions()
         self.ip = ip 
@@ -206,12 +232,13 @@ class ClientThread(Thread):
         self.teacher = teacher
         self.messages = []
         self.is_blocked = False
-        self.lock = Lock()  # Create a threading lock
+        self.lock = Lock()  
+        
         print("[+] New server socket thread started for " + ip + ":" + str(port))
 
     def run(self): 
         """
-        Runs the server and handles the communication with the client.
+        Runs the class and handles the communication with the client.
 
         This method performs the following steps:
         1. Imports the public key from the client.
@@ -326,17 +353,36 @@ class ClientThread(Thread):
             print(f"Received command: {cmmd} with data: {data}")
             
     def toggle_block_state(self):  
+        """
+        Toggles the block state of the client on the server side.
+
+        This method is used to toggle the block state of the server. If the server is currently blocked,
+        it will be unblocked, and vice versa.
+        """
         with self.lock:
             self.is_blocked = not self.is_blocked
     
     def get_block_state(self):
-        with self.lock:
-            return self.is_blocked
+            """
+            Returns the current state of the block.
+
+            Returns:
+                bool: True if the block is currently active, False otherwise.
+            """
+            with self.lock:
+                return self.is_blocked
            
     def append_message(self, cmmd, data=''):
+        """
+        Appends a message to the messages list.
+
+        Parameters:
+        - cmmd (str): The command to be appended.
+        - data (str): The data associated with the command (default: '').
+
+        """
         with self.lock:  # Acquire the lock before modifying the messages list
             self.messages.append((cmmd, data))
-            print(f"Appended message: {cmmd} with data: {data}")
 
 if __name__ == "__main__":
     server = Server(host='0.0.0.0', port=5000)

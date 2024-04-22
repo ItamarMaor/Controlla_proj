@@ -19,6 +19,20 @@ commands = {'disconnect': 0, 'shutdown': 1, 'screenshot': 2, 'block': 3, 'unbloc
 
 class Gui:
     def __init__(self):
+        """
+        Initializes the GUI class.
+
+        Attributes:
+        - server: The server address.
+        - database: An instance of the Database class.
+        - server_functions: An instance of the ServerFunctions class.
+        - username: The username of the user.
+        - listbox: The listbox widget.
+        - failed_login: A boolean indicating if the login attempt failed.
+        - sign_up_success: A boolean indicating if the sign up was successful.
+        - is_valid_password: A boolean indicating if the password is valid.
+        - is_valid_username: A boolean indicating if the username is valid.
+        """
         self.server = ''
         self.database = Database()
         self.server_functions = ServerFunctions()
@@ -686,7 +700,6 @@ class Gui:
                 self.reresh_listbox()
                 self.server.refresh = False
     
-
     def show_log(self):
         """
         Opens a new window to display the log for the teacher.
@@ -744,5 +757,3 @@ if __name__ == '__main__':
     
     app = Gui()
     app.login()
-    # self.server.start_server()
-  
