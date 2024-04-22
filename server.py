@@ -4,9 +4,9 @@ import datetime
 import select
 import pickle
 import logging
-from controlla_server_side.server_utilities import Database
-from controlla_server_side.server_utilities import ServerFunctions
-from controlla_server_side.server_utilities import HybridEncryptionServer
+from server_utilities import Database
+from server_utilities import ServerFunctions
+from server_utilities import HybridEncryptionServer
 from threading import Thread
 from threading import Lock
 
